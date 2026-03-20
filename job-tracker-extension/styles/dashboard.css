@@ -1,0 +1,251 @@
+body {
+  background: var(--surface);
+  color: var(--on2);
+}
+
+.topbar {
+  height: 56px;
+  background: var(--on1);
+  color: var(--c3);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 18px;
+}
+
+.brand-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dot-live {
+  width: 8px;
+  height: 8px;
+  border-radius: 99px;
+  background: var(--tertiary);
+}
+
+.top-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+}
+
+.chip {
+  background: rgb(255 255 255 / 0.12);
+  color: var(--c3);
+  border-radius: 4px;
+  padding: 4px 8px;
+}
+
+.watching {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.layout {
+  min-height: calc(100vh - 56px);
+  display: grid;
+  grid-template-columns: 210px 1fr;
+}
+
+.sidebar {
+  background: var(--on1);
+  color: var(--c3);
+  padding: 24px 14px;
+  display: grid;
+  align-content: space-between;
+}
+
+.nav {
+  display: grid;
+  gap: 6px;
+}
+
+.nav-item {
+  text-align: left;
+  background: transparent;
+  border: none;
+  color: rgb(240 241 242 / 0.84);
+  padding: 8px 10px;
+  border-radius: 8px;
+  font-family: "Inter", sans-serif;
+  cursor: pointer;
+}
+
+.nav-item.active {
+  background: rgb(155 202 242 / 0.2);
+  color: var(--c1);
+}
+
+.sidebar-actions {
+  display: grid;
+  gap: 8px;
+}
+
+button {
+  border: none;
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-family: "Manrope", sans-serif;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.ghost {
+  background: rgb(255 255 255 / 0.08);
+  color: var(--c3);
+}
+
+.content {
+  padding: 28px;
+  display: grid;
+  gap: 1.75rem;
+}
+
+.heading-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+h1,
+h2,
+.stat-num {
+  font-family: "Manrope", sans-serif;
+}
+
+h1 {
+  color: var(--on1);
+  font-size: 28px;
+}
+
+.sub {
+  color: var(--on3);
+  margin-top: 4px;
+}
+
+.cta {
+  background: var(--c1);
+  color: var(--on1);
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(120px, 1fr));
+  gap: 10px;
+}
+
+.stat-card {
+  background: #fff;
+  border-radius: 10px;
+  padding: 18px;
+}
+
+.stat-num {
+  color: var(--on1);
+  font-size: 30px;
+}
+
+.stat-card p {
+  color: var(--on3);
+  margin-top: 4px;
+}
+
+.panel {
+  background: #fff;
+  border-radius: 10px;
+  padding: 20px 22px;
+  display: grid;
+  gap: 0.9rem;
+}
+
+.pipeline {
+  display: grid;
+  gap: 8px;
+}
+
+.pipe-row {
+  display: grid;
+  grid-template-columns: 110px 1fr 48px;
+  gap: 10px;
+  align-items: center;
+  font-size: 13px;
+}
+
+.pipe-track {
+  background: var(--surface2);
+  border-radius: 6px;
+  height: 10px;
+  overflow: hidden;
+}
+
+.pipe-fill {
+  background: var(--c1);
+  height: 10px;
+}
+
+.split {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 1.75rem;
+}
+
+.table-wrap {
+  overflow: auto;
+  max-height: 340px;
+}
+
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 8px;
+  font-size: 13px;
+}
+
+th {
+  text-align: left;
+  color: var(--on3);
+  padding-right: 8px;
+}
+
+td {
+  background: var(--surface);
+  color: var(--on2);
+  padding: 10px 8px;
+}
+
+.empty {
+  text-align: center;
+  color: var(--on4);
+}
+
+.activity-list {
+  list-style: none;
+  display: grid;
+  gap: 10px;
+  font-size: 13px;
+}
+
+@media (max-width: 980px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .split {
+    grid-template-columns: 1fr;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, minmax(120px, 1fr));
+  }
+}

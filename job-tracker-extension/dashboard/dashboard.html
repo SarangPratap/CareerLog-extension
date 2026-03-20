@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Careerlog Dashboard</title>
+  <link rel="stylesheet" href="../styles/tokens.css">
+  <link rel="stylesheet" href="../styles/dashboard.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand-row">
+      <span class="dot-live"></span>
+      <p class="brand">Careerlog</p>
+    </div>
+    <div class="top-meta">
+      <span id="provider-chip" class="chip">Gemini - free</span>
+      <span class="watching"><span class="dot-live"></span>watching</span>
+    </div>
+  </header>
+
+  <main class="layout">
+    <aside class="sidebar">
+      <nav class="nav">
+        <button class="nav-item active" type="button">Dashboard</button>
+        <button class="nav-item" type="button">Applications</button>
+        <button class="nav-item" type="button">Interviews</button>
+        <button class="nav-item" type="button">Offers</button>
+      </nav>
+
+      <div class="sidebar-actions">
+        <button id="btn-open-sheet" class="ghost" type="button">Sheet</button>
+        <button id="btn-open-log" class="ghost" type="button">Log</button>
+        <button id="btn-open-settings" class="ghost" type="button">Settings</button>
+      </div>
+    </aside>
+
+    <section class="content">
+      <div class="heading-row">
+        <div>
+          <h1 id="month-label">Your search at a glance</h1>
+          <p class="sub">Live snapshot from Gmail + Google Sheets</p>
+        </div>
+        <button id="btn-sync" class="cta" type="button">Sync</button>
+      </div>
+
+      <section class="stats-grid">
+        <article class="stat-card">
+          <span id="stat-total" class="stat-num">0</span>
+          <p>applications</p>
+        </article>
+        <article class="stat-card">
+          <span id="stat-interviews" class="stat-num">0</span>
+          <p>interviews</p>
+        </article>
+        <article class="stat-card">
+          <span id="stat-conversion" class="stat-num">0%</span>
+          <p>interview rate</p>
+        </article>
+        <article class="stat-card">
+          <span id="stat-offers" class="stat-num">0</span>
+          <p>offers</p>
+        </article>
+      </section>
+
+      <section class="panel">
+        <h2>Pipeline funnel</h2>
+        <div id="pipeline" class="pipeline"></div>
+      </section>
+
+      <div class="split">
+        <section class="panel">
+          <h2>Applications table</h2>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Company</th>
+                  <th>Role</th>
+                  <th>Applied</th>
+                  <th>Status</th>
+                  <th>Updated</th>
+                </tr>
+              </thead>
+              <tbody id="applications-body">
+                <tr><td colspan="5" class="empty">No rows yet.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="panel">
+          <h2>Activity</h2>
+          <ul id="activity-list" class="activity-list">
+            <li>No activity yet.</li>
+          </ul>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <script src="../lib/auth.js"></script>
+  <script src="./dashboard.js"></script>
+</body>
+</html>

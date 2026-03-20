@@ -1,0 +1,56 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600&family=Inter:wght@300;400;500&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --c1: #9BCAF2;
+  --c2: #C2DCF2;
+  --c3: #F0F1F2;
+  --c4: #F2D6B3;
+  --c5: #0D0D0D;
+
+  --surface:   #F0F1F2;
+  --surface2:  #E4E6E8;
+  --surface3:  #D8DADC;
+  --on1:       #0D0D0D;
+  --on2:       #3A3A3C;
+  --on3:       #7A7A80;
+  --on4:       #A8A8B0;
+
+  --tertiary:   #8BD6B4;
+  --tert-bg:    #D6F2E8;
+  --tert-text:  #1A6A48;
+  --peach-text: #7A4A1A;
+  --danger-bg:  #F2C2C2;
+  --danger-txt: #7A2A2A;
+
+  --radius-sm: 4px;
+  --radius-md: 7px;
+  --radius-lg: 10px;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--surface);
+  color: var(--on2);
+  font-size: 13px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, .manrope { font-family: 'Manrope', sans-serif; }
+
+button {
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  border: none;
+  outline: none;
+}
+
+input, select {
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+}
+
+a { color: var(--c1); text-decoration: none; }
+a:hover { text-decoration: underline; }

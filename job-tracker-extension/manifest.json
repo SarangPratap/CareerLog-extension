@@ -1,0 +1,36 @@
+{
+  "manifest_version": 3,
+  "name": "Job Tracker - Auto Gmail to Sheets",
+  "version": "1.0.0",
+  "description": "Automatically tracks job applications from Gmail into your Google Sheet. Uses your own AI API key. Your data never leaves your browser.",
+  "permissions": ["identity", "storage", "alarms"],
+  "host_permissions": [
+    "https://www.googleapis.com/*",
+    "https://api.anthropic.com/*",
+    "https://generativelanguage.googleapis.com/*",
+    "https://api.openai.com/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "options_page": "settings/settings.html",
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
+  },
+  "oauth2": {
+    "client_id": "353855970745-6a1u8f47ttgnjt3e8jnagtfbk3fe8381.apps.googleusercontent.com",
+    "scopes": [
+      "https://www.googleapis.com/auth/gmail.readonly",
+      "https://www.googleapis.com/auth/spreadsheets",
+      "https://www.googleapis.com/auth/drive.file"
+    ]
+  }
+}

@@ -1,0 +1,169 @@
+html,
+body {
+  width: 320px;
+  min-height: 470px;
+}
+
+body {
+  background: var(--on1);
+  color: var(--c3);
+}
+
+#app {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  min-height: 470px;
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 14px 10px;
+  border-bottom: 1px solid rgb(255 255 255 / 0.08);
+}
+
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.brand {
+  color: var(--c3);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.live {
+  text-transform: lowercase;
+  color: var(--tertiary);
+  font-size: 12px;
+}
+
+.state {
+  padding: 14px;
+  display: grid;
+  gap: 1rem;
+  align-content: start;
+}
+
+.hidden {
+  display: none;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.stats article {
+  background: rgb(255 255 255 / 0.05);
+  border-radius: 10px;
+  padding: 10px 8px;
+  text-align: center;
+}
+
+.stat-num {
+  display: block;
+  font-size: 22px;
+  color: var(--c3);
+}
+
+.stats p {
+  margin-top: 2px;
+  font-size: 11px;
+  text-transform: lowercase;
+  color: rgb(240 241 242 / 0.72);
+}
+
+.label {
+  text-transform: uppercase;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  color: rgb(240 241 242 / 0.6);
+  margin-bottom: 6px;
+}
+
+.activity ul {
+  list-style: none;
+  display: grid;
+  gap: 8px;
+  padding: 0;
+}
+
+.activity li {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 8px;
+  align-items: center;
+  font-size: 12px;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+}
+
+.dot.neutral {
+  background: var(--c4);
+}
+
+time {
+  color: rgb(240 241 242 / 0.58);
+  font-size: 11px;
+}
+
+.actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+button {
+  border: none;
+  border-radius: 10px;
+  padding: 10px;
+  cursor: pointer;
+  font-family: "Manrope", sans-serif;
+  font-weight: 600;
+}
+
+.cta {
+  background: var(--c1);
+  color: var(--on1);
+}
+
+.ghost {
+  background: rgb(255 255 255 / 0.08);
+  color: var(--c3);
+}
+
+.mini {
+  padding: 6px 8px;
+  font-size: 11px;
+  border-radius: 8px;
+}
+
+.ghost:disabled {
+  opacity: 0.7;
+  cursor: progress;
+}
+
+.sync-status {
+  font-size: 12px;
+  color: var(--tertiary);
+}
+
+.footer {
+  margin-top: auto;
+  font-size: 11px;
+  color: rgb(240 241 242 / 0.65);
+}
+
+.error-title {
+  font-family: "Manrope", sans-serif;
+  color: var(--danger-bg);
+}

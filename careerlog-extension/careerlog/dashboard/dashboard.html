@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Careerlog Dashboard</title>
+  <link rel="stylesheet" href="../styles/tokens.css">
+  <style>
+    body { background: var(--surface); min-height: 100vh; }
+
+    .shell { display: grid; grid-template-columns: 220px 1fr; grid-template-rows: 52px 1fr; min-height: 100vh; }
+
+    /* Topbar */
+    .topbar { grid-column: 1/-1; background: var(--on1); display: flex; align-items: center;
+      justify-content: space-between; padding: 0 24px; position: sticky; top: 0; z-index: 10; }
+    .brand  { display: flex; align-items: center; gap: 8px; }
+    .brand-dot  { width: 6px; height: 6px; border-radius: 50%; background: var(--c1); }
+    .brand-name { font-family: 'Manrope', sans-serif; font-size: 15px; font-weight: 600; color: #fff; letter-spacing: -.2px; }
+    .top-chips  { display: flex; align-items: center; gap: 8px; }
+    .chip { font-size: 10px; padding: 4px 10px; border-radius: 20px; letter-spacing: .01em; }
+    .chip-ai   { background: rgba(242,214,179,.15); color: var(--c4); }
+    .chip-sync { background: rgba(155,202,242,.12); color: var(--c1); display: flex; align-items: center; gap: 4px; }
+    .live-dot  { width: 5px; height: 5px; border-radius: 50%; background: var(--tertiary); animation: blink 2s infinite; }
+    @keyframes blink { 0%,100%{opacity:1;} 50%{opacity:.2;} }
+
+    /* Sidebar */
+    .sidebar { background: var(--on1); padding: 20px 12px; display: flex; flex-direction: column; gap: 2px; }
+    .nav-lbl  { font-size: 9px; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,.28);
+      padding: 12px 8px 5px; font-family: 'Manrope', sans-serif; }
+    .ni { display: flex; align-items: center; justify-content: space-between; padding: 7px 10px;
+      border-radius: 6px; font-size: 12px; color: rgba(255,255,255,.42); cursor: pointer; }
+    .ni:hover { background: rgba(255,255,255,.06); color: rgba(255,255,255,.75); }
+    .ni.on { background: var(--c1); color: var(--on1); font-weight: 500; }
+    .ni-l  { display: flex; align-items: center; gap: 8px; }
+    .ni-ct { font-size: 10px; padding: 1px 5px; border-radius: 10px; background: rgba(255,255,255,.1); color: rgba(255,255,255,.4); }
+    .ni.on .ni-ct { background: rgba(13,13,13,.15); color: var(--on1); }
+    .sdiv  { height: 1px; background: rgba(255,255,255,.07); margin: 8px 8px; }
+
+    /* Main */
+    .main { padding: 24px 28px; overflow-y: auto; }
+
+    .page-head { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 1.75rem; }
+    .page-eyebrow { font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--on4);
+      margin-bottom: 4px; font-family: 'Manrope', sans-serif; }
+    .page-h1  { font-family: 'Manrope', sans-serif; font-size: 26px; font-weight: 600; color: var(--on1);
+      letter-spacing: -.5px; line-height: 1; }
+    .page-h1 em { font-weight: 300; font-style: normal; color: var(--on3); }
+    .sync-btn { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--on3);
+      background: var(--surface2); border: 1px solid var(--surface3); border-radius: 5px;
+      padding: 7px 14px; cursor: pointer; font-family: 'Inter', sans-serif; }
+    .sync-btn:hover { background: var(--surface3); color: var(--on2); }
+
+    /* Stats */
+    .stats { display: grid; grid-template-columns: repeat(4,1fr); gap: 1rem; margin-bottom: 1.75rem; }
+    .sc { }
+    .sc-num   { font-family: 'Manrope', sans-serif; font-size: 40px; font-weight: 300; color: var(--on1); letter-spacing: -2px; line-height: 1; }
+    .sc-label { font-size: 11px; color: var(--on4); margin-top: 3px; letter-spacing: .02em; }
+    .sc-trend { font-size: 11px; font-weight: 500; color: var(--tertiary); margin-top: 2px; }
+    .sc-bar   { height: 2px; background: var(--surface2); border-radius: 2px; margin-top: 10px; }
+    .sc-fill  { height: 2px; border-radius: 2px; }
+
+    /* Funnel */
+    .funnel { margin-bottom: 1.75rem; }
+    .section-lbl { font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--on4);
+      margin-bottom: .9rem; font-family: 'Manrope', sans-serif; }
+    .stages { display: flex; gap: 4px; }
+    .stage { flex: 1; padding: 12px 10px 10px; border-radius: 6px; cursor: pointer; }
+    .stage:hover { background: var(--surface2); }
+    .stage-num  { font-family: 'Manrope', sans-serif; font-size: 20px; font-weight: 500; color: var(--on1); letter-spacing: -.5px; line-height: 1; margin-bottom: 3px; }
+    .stage-name { font-size: 9px; text-transform: uppercase; letter-spacing: .07em; color: var(--on4); margin-bottom: 8px; }
+    .stage-bar  { height: 3px; border-radius: 2px; background: var(--surface3); }
+    .stage-fill { height: 3px; border-radius: 2px; margin-top: -3px; }
+
+    /* Content grid */
+    .content-grid { display: grid; grid-template-columns: 1fr 280px; gap: 1.75rem; }
+
+    /* Job cards */
+    .apps-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
+    .filter-row { display: flex; gap: 5px; }
+    .fpill { font-size: 11px; padding: 4px 11px; border-radius: 20px; cursor: pointer;
+      font-family: 'Inter', sans-serif; background: transparent; color: var(--on3); border: none; }
+    .fpill:hover { background: var(--surface2); color: var(--on1); }
+    .fpill.on { background: var(--on1); color: #fff; }
+
+    .job-list { display: flex; flex-direction: column; gap: .85rem; }
+    .jcard { background: #fff; border-radius: 10px; padding: 16px 18px; position: relative; }
+    .jcard-top  { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 10px; }
+    .jcard-co   { display: flex; align-items: center; gap: 10px; }
+    .co-mark    { width: 30px; height: 30px; border-radius: 7px; display: flex; align-items: center;
+      justify-content: center; font-family: 'Manrope', sans-serif; font-size: 12px; font-weight: 700; flex-shrink: 0; }
+    .co-name    { font-size: 13px; font-weight: 500; color: var(--on1); font-family: 'Manrope', sans-serif; }
+    .co-role    { font-size: 11px; color: var(--on4); margin-top: 1px; }
+    .jcard-right { display: flex; align-items: center; gap: 7px; }
+    .jcard-date  { font-size: 10px; color: var(--on4); }
+    .status-tag  { font-size: 10px; font-weight: 500; padding: 3px 8px; border-radius: 4px; letter-spacing: .02em; white-space: nowrap; }
+    .st-applied  { background: var(--c2);        color: #1A4A7A; }
+    .st-interview{ background: var(--c4);        color: var(--peach-text); }
+    .st-offer    { background: var(--tert-bg);   color: var(--tert-text); }
+    .st-rejected { background: var(--danger-bg); color: var(--danger-txt); }
+    .st-review   { background: var(--surface2);  color: var(--on2); }
+    .jcard-bot  { display: flex; align-items: center; gap: 5px; }
+    .rpip       { width: 7px; height: 7px; border-radius: 50%; }
+    .round-lbl  { font-size: 10px; color: var(--on4); margin-left: 3px; }
+
+    .ai-badge { position: absolute; top: -9px; right: 14px; background: var(--on1); color: var(--tertiary);
+      font-size: 9px; font-weight: 500; padding: 3px 8px; border-radius: 10px; letter-spacing: .04em;
+      font-family: 'Manrope', sans-serif; display: flex; align-items: center; gap: 4px; white-space: nowrap; }
+    .ai-badge-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--tertiary); }
+    .ai-badge.danger { background: var(--danger-bg); color: var(--danger-txt); }
+    .ai-badge.danger .ai-badge-dot { background: var(--danger-txt); }
+
+    .no-apps { text-align: center; padding: 40px 20px; color: var(--on4); font-size: 13px; }
+    .no-apps strong { display: block; color: var(--on2); font-family: 'Manrope', sans-serif; font-size: 15px; margin-bottom: 6px; }
+
+    /* Right col */
+    .rc { background: #fff; border-radius: 10px; overflow: hidden; margin-bottom: 1rem; }
+    .rc-head { padding: 13px 16px 10px; font-size: 10px; text-transform: uppercase;
+      letter-spacing: .08em; color: var(--on4); border-bottom: 1px solid var(--surface); font-family: 'Manrope', sans-serif; }
+    .act-item { display: flex; gap: 9px; padding: 10px 16px; align-items: flex-start; }
+    .act-item + .act-item { border-top: 1px solid var(--surface); }
+    .act-ico  { width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center;
+      justify-content: center; flex-shrink: 0; margin-top: 1px; }
+    .act-body { font-size: 11px; color: var(--on3); line-height: 1.5; }
+    .act-body b { color: var(--on1); font-weight: 500; }
+    .act-time { font-size: 10px; color: var(--on4); margin-top: 1px; }
+    .usage-row { display: flex; align-items: center; justify-content: space-between; padding: 9px 16px;
+      font-size: 11px; color: var(--on3); border-top: 1px solid var(--surface); }
+    .usage-val  { font-weight: 500; color: var(--on1); }
+    .usage-free { color: var(--tertiary); font-weight: 500; }
+    .rc-head-pad { padding: 13px 16px 12px; }
+  </style>
+</head>
+<body>
+<div class="shell">
+
+  <div class="topbar">
+    <div class="brand">
+      <div class="brand-dot"></div>
+      <span class="brand-name">Careerlog</span>
+    </div>
+    <div class="top-chips">
+      <span class="chip chip-ai" id="top-provider">–</span>
+      <span class="chip chip-sync"><div class="live-dot"></div>watching gmail</span>
+    </div>
+  </div>
+
+  <div class="sidebar">
+    <div class="nav-lbl">Tracker</div>
+    <div class="ni on"><div class="ni-l">
+      <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x=".5" y=".5" width="5" height="5" rx="1" stroke="currentColor"/><rect x="7.5" y=".5" width="5" height="5" rx="1" stroke="currentColor"/><rect x=".5" y="7.5" width="5" height="5" rx="1" stroke="currentColor"/><rect x="7.5" y="7.5" width="5" height="5" rx="1" stroke="currentColor"/></svg>
+      Dashboard
+    </div></div>
+    <div class="ni" id="nav-open-sheet"><div class="ni-l">
+      <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x=".5" y=".5" width="12" height="12" rx="1.5" stroke="currentColor"/><path d="M4.5.5v12M.5 4.5h12M.5 8.5h12" stroke="currentColor"/></svg>
+      Open sheet
+    </div></div>
+    <div class="sdiv"></div>
+    <div class="nav-lbl">Settings</div>
+    <div class="ni" id="nav-settings"><div class="ni-l">
+      <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><circle cx="6.5" cy="4" r="2.5" stroke="currentColor"/><path d="M1.5 12c0-2.76 2.24-5 5-5s5 2.24 5 5" stroke="currentColor" stroke-linecap="round"/></svg>
+      Settings
+    </div></div>
+    <div class="ni" id="nav-sync-now"><div class="ni-l">
+      <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M11 6.5A4.5 4.5 0 1 1 6.5 2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><path d="M6.5 2l1.5 1.5L6.5 5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Sync now
+    </div></div>
+  </div>
+
+  <div class="main">
+    <div class="page-head">
+      <div>
+        <div class="page-eyebrow" id="page-date">–</div>
+        <div class="page-h1">Your search <em>at a glance</em></div>
+      </div>
+      <button class="sync-btn" id="btn-sync">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M10.5 6A4.5 4.5 0 1 1 6 1.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><path d="M6 1.5l1.5 1.5L6 4.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Sync now
+      </button>
+    </div>
+
+    <div class="stats">
+      <div class="sc">
+        <div class="sc-num" id="stat-total">–</div>
+        <div class="sc-label">applications sent</div>
+        <div class="sc-bar"><div class="sc-fill" style="background:var(--c1);width:80%;"></div></div>
+      </div>
+      <div class="sc">
+        <div class="sc-num" id="stat-interviews">–</div>
+        <div class="sc-label">active interviews</div>
+        <div class="sc-bar"><div class="sc-fill" style="background:var(--c2);width:40%;"></div></div>
+      </div>
+      <div class="sc">
+        <div class="sc-num" id="stat-offers">–</div>
+        <div class="sc-label">offers in hand</div>
+        <div class="sc-bar"><div class="sc-fill" style="background:var(--tertiary);width:10%;"></div></div>
+      </div>
+      <div class="sc">
+        <div class="sc-num" id="stat-cost">$0.00</div>
+        <div class="sc-label">AI cost this month</div>
+        <div class="sc-bar"><div class="sc-fill" style="background:var(--c4);width:5%;"></div></div>
+      </div>
+    </div>
+
+    <div class="funnel">
+      <div class="section-lbl">Pipeline</div>
+      <div class="stages" id="funnel-stages">
+        <!-- populated by JS -->
+      </div>
+    </div>
+
+    <div class="content-grid">
+      <div>
+        <div class="apps-head">
+          <div class="section-lbl" style="margin-bottom:0;">Applications</div>
+          <div class="filter-row">
+            <button class="fpill on" data-filter="all">All</button>
+            <button class="fpill" data-filter="active">Active</button>
+            <button class="fpill" data-filter="offer">Offers</button>
+          </div>
+        </div>
+        <div class="job-list" id="job-list">
+          <div class="no-apps"><strong>No applications yet</strong>Run a sync to import your job emails.</div>
+        </div>
+      </div>
+
+      <div>
+        <div class="rc">
+          <div class="rc-head">Recent activity</div>
+          <div id="activity-feed">
+            <div class="act-item"><div class="act-body" style="color:var(--on4);">No recent activity</div></div>
+          </div>
+        </div>
+        <div class="rc">
+          <div class="rc-head-pad rc-head">AI usage</div>
+          <div class="usage-row"><span>Provider</span><span class="usage-val" id="usage-provider">–</span></div>
+          <div class="usage-row"><span>Emails parsed</span><span class="usage-val" id="usage-parsed">0</span></div>
+          <div class="usage-row"><span>Total cost</span><span class="usage-free" id="usage-cost">$0.00</span></div>
+          <div class="usage-row" style="padding-bottom:14px;">
+            <span>Last sync</span><span class="usage-val" id="usage-sync">–</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+var PROVIDER_LABELS = { claude:'Claude · Haiku', gemini:'Gemini · free tier', openai:'GPT-4o Mini' };
+var STAGE_COLORS = ['#9BCAF2','#C2DCF2','#F2D6B3','#D4A070','#8BD6B4','#F2C2C2'];
+var STAGE_NAMES  = ['Applied','Reviewing','Interview','Finals','Offer','Rejected'];
+
+function formatTime(ts) {
+  if (!ts) return '–';
+  var diff = Date.now() - ts;
+  var m = Math.floor(diff/60000);
+  if (m < 1)  return 'just now';
+  if (m < 60) return m + 'm ago';
+  var h = Math.floor(m/60);
+  if (h < 24) return h + 'h ago';
+  return Math.floor(h/24) + 'd ago';
+}
+
+function renderFunnel(apps) {
+  var counts = [0,0,0,0,0,0];
+  apps.forEach(function(a) {
+    var s = (a.status || '').toLowerCase();
+    if (s.indexOf('review') !== -1)                    counts[1]++;
+    else if (s.indexOf('interview') !== -1 || s.indexOf('phone') !== -1 || s.indexOf('technical') !== -1) counts[2]++;
+    else if (s.indexOf('final') !== -1)                counts[3]++;
+    else if (s.indexOf('offer') !== -1)                counts[4]++;
+    else if (s.indexOf('reject') !== -1)               counts[5]++;
+    else                                               counts[0]++;
+  });
+  var max = Math.max.apply(null, counts) || 1;
+  var html = '';
+  STAGE_NAMES.forEach(function(name, i) {
+    html += '<div class="stage">' +
+      '<div class="stage-num">' + counts[i] + '</div>' +
+      '<div class="stage-name">' + name + '</div>' +
+      '<div class="stage-bar"><div class="stage-fill" style="background:' + STAGE_COLORS[i] + ';width:' + Math.round(counts[i]/max*100) + '%;"></div></div>' +
+      '</div>';
+  });
+  document.getElementById('funnel-stages').innerHTML = html;
+  return counts;
+}
+
+function getStatusClass(status) {
+  if (!status) return 'st-review';
+  var s = status.toLowerCase();
+  if (s.indexOf('offer') !== -1)   return 'st-offer';
+  if (s.indexOf('reject') !== -1)  return 'st-rejected';
+  if (s.indexOf('interview') !== -1 || s.indexOf('phone') !== -1 || s.indexOf('technical') !== -1 || s.indexOf('round') !== -1) return 'st-interview';
+  if (s.indexOf('applied') !== -1) return 'st-applied';
+  return 'st-review';
+}
+
+function getStatusLabel(status) {
+  if (!status) return 'Unknown';
+  return status.replace(/^[^\w]+/, '');
+}
+
+function renderApps(apps, filter) {
+  var filtered = apps;
+  if (filter === 'active') {
+    filtered = apps.filter(function(a) { return a.status && a.status.toLowerCase().indexOf('reject') === -1; });
+  } else if (filter === 'offer') {
+    filtered = apps.filter(function(a) { return a.status && a.status.toLowerCase().indexOf('offer') !== -1; });
+  }
+
+  var list = document.getElementById('job-list');
+  if (!filtered.length) {
+    list.innerHTML = '<div class="no-apps"><strong>No applications</strong>Try a different filter.</div>';
+    return;
+  }
+
+  var html = '';
+  filtered.slice(0, 20).forEach(function(app) {
+    var initial = (app.company || '?')[0].toUpperCase();
+    var colors  = ['#EEF6FF:#1A4A7A','#F5EDD8:#7A4A1A','#F0F1F2:#3A3A3C','#D6F2E8:#1A6A48','#F2C2C2:#7A2A2A'];
+    var pick    = colors[initial.charCodeAt(0) % colors.length].split(':');
+    var badge   = '';
+    if (app.status && app.status.toLowerCase().indexOf('offer') !== -1) {
+      badge = '<div class="ai-badge"><div class="ai-badge-dot"></div>ai · offer detected</div>';
+    } else if (app.status && app.status.toLowerCase().indexOf('reject') !== -1) {
+      badge = '<div class="ai-badge danger"><div class="ai-badge-dot"></div>ai · rejection detected</div>';
+    } else if (app.status && (app.status.toLowerCase().indexOf('interview') !== -1 || app.status.toLowerCase().indexOf('round') !== -1)) {
+      badge = '<div class="ai-badge"><div class="ai-badge-dot"></div>ai · interview detected</div>';
+    }
+
+    var rounds = parseInt(app.rounds) || 0;
+    var pips = '';
+    for (var i = 0; i < Math.max(rounds, 3); i++) {
+      var col = i < rounds ? 'var(--tertiary)' : 'var(--surface3)';
+      pips += '<div class="rpip" style="background:' + col + ';"></div>';
+    }
+
+    html += '<div class="jcard">' + badge +
+      '<div class="jcard-top">' +
+      '<div class="jcard-co">' +
+      '<div class="co-mark" style="background:' + pick[0] + ';color:' + pick[1] + ';">' + initial + '</div>' +
+      '<div><div class="co-name">' + (app.company || '–') + '</div><div class="co-role">' + (app.role || '–') + '</div></div>' +
+      '</div>' +
+      '<div class="jcard-right">' +
+      '<span class="jcard-date">' + (app.date || '') + '</span>' +
+      '<span class="status-tag ' + getStatusClass(app.status) + '">' + getStatusLabel(app.status) + '</span>' +
+      '</div></div>' +
+      '<div class="jcard-bot">' + pips +
+      '<span class="round-lbl">' + (rounds > 0 ? rounds + ' round' + (rounds !== 1 ? 's' : '') : 'no rounds yet') + '</span>' +
+      '</div></div>';
+  });
+
+  list.innerHTML = html;
+}
+
+function renderActivity(log) {
+  var feed = document.getElementById('activity-feed');
+  if (!log || !log.length) {
+    feed.innerHTML = '<div class="act-item"><div class="act-body" style="color:var(--on4);">No activity yet</div></div>';
+    return;
+  }
+  var html = '';
+  log.slice(0, 5).forEach(function(item) {
+    var bgCol  = item.type === 'offer' ? 'var(--tert-bg)' : item.type === 'rejected' ? 'var(--danger-bg)' : 'var(--c2)';
+    var icoCol = item.type === 'offer' ? 'var(--tert-text)' : item.type === 'rejected' ? 'var(--danger-txt)' : '#1A4A7A';
+    var icon   = item.type === 'rejected'
+      ? '<path d="M3 3l4 4M7 3L3 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>'
+      : '<path d="M2 5l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>';
+    html += '<div class="act-item">' +
+      '<div class="act-ico" style="background:' + bgCol + ';color:' + icoCol + ';">' +
+      '<svg width="10" height="10" viewBox="0 0 10 10" fill="none">' + icon + '</svg></div>' +
+      '<div><div class="act-body"><b>' + (item.company || '') + '</b> · ' + (item.label || '') + '</div>' +
+      '<div class="act-time">' + formatTime(item.ts) + '</div></div>' +
+      '</div>';
+  });
+  feed.innerHTML = html;
+}
+
+// Load data from sheet
+async function loadDashboard() {
+  chrome.storage.local.get(
+    ['sheetId','aiProvider','aiApiKey','lastSyncTime','totalProcessed','activityLog'],
+    function(d) {
+      // Provider
+      var prov = PROVIDER_LABELS[d.aiProvider] || d.aiProvider || '–';
+      document.getElementById('top-provider').textContent = prov;
+      document.getElementById('usage-provider').textContent = prov;
+      document.getElementById('usage-parsed').textContent = d.totalProcessed || 0;
+      document.getElementById('usage-sync').textContent = formatTime(d.lastSyncTime);
+
+      // Date
+      var now = new Date();
+      document.getElementById('page-date').textContent =
+        now.toLocaleString('default', {month:'long'}) + ' ' + now.getFullYear();
+
+      // Activity
+      renderActivity(d.activityLog || []);
+
+      if (!d.sheetId) {
+        document.getElementById('stat-total').textContent = '–';
+        return;
+      }
+
+      // Fetch apps from sheet
+      chrome.identity.getAuthToken({ interactive: false }, function(token) {
+        if (!token) return;
+        fetch('https://sheets.googleapis.com/v4/spreadsheets/' + d.sheetId + '/values/Applications!A:F', {
+          headers: { 'Authorization': 'Bearer ' + token }
+        })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          var rows = (data.values || []).slice(1);
+          var apps = rows.map(function(r) {
+            return { company: r[0], role: r[1], date: r[2], status: r[3], rounds: r[5] };
+          });
+
+          document.getElementById('stat-total').textContent = apps.length;
+          var interviews = apps.filter(function(a) { return a.status && (a.status.indexOf('Interview') !== -1 || a.status.indexOf('Phone') !== -1); }).length;
+          var offers     = apps.filter(function(a) { return a.status && a.status.indexOf('Offer') !== -1; }).length;
+          document.getElementById('stat-interviews').textContent = interviews;
+          document.getElementById('stat-offers').textContent     = offers;
+
+          renderFunnel(apps);
+          renderApps(apps, 'all');
+        })
+        .catch(function(e) { console.error('Sheet fetch error', e); });
+      });
+    }
+  );
+}
+
+// Filter pills
+document.querySelectorAll('.fpill').forEach(function(pill) {
+  pill.addEventListener('click', function() {
+    document.querySelectorAll('.fpill').forEach(function(p) { p.classList.remove('on'); });
+    pill.classList.add('on');
+    chrome.identity.getAuthToken({ interactive: false }, function(token) {
+      chrome.storage.local.get(['sheetId'], function(d) {
+        if (!token || !d.sheetId) return;
+        fetch('https://sheets.googleapis.com/v4/spreadsheets/' + d.sheetId + '/values/Applications!A:F', {
+          headers: { 'Authorization': 'Bearer ' + token }
+        })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          var rows = (data.values || []).slice(1);
+          var apps = rows.map(function(r) {
+            return { company:r[0], role:r[1], date:r[2], status:r[3], rounds:r[5] };
+          });
+          renderApps(apps, pill.getAttribute('data-filter'));
+        });
+      });
+    });
+  });
+});
+
+// Nav
+document.getElementById('nav-open-sheet').addEventListener('click', function() {
+  chrome.storage.local.get(['sheetId'], function(d) {
+    if (d.sheetId) chrome.tabs.create({ url: 'https://docs.google.com/spreadsheets/d/' + d.sheetId });
+  });
+});
+document.getElementById('nav-settings').addEventListener('click', function() {
+  chrome.runtime.openOptionsPage();
+});
+
+function doSync(btn) {
+  if (btn) { btn.disabled = true; btn.textContent = 'Syncing…'; }
+  chrome.runtime.sendMessage({ type: 'SYNC_NOW' }, function() {
+    if (btn) { btn.disabled = false; btn.innerHTML = '<svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M10.5 6A4.5 4.5 0 1 1 6 1.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><path d="M6 1.5l1.5 1.5L6 4.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg> Sync now'; }
+    loadDashboard();
+  });
+}
+
+document.getElementById('btn-sync').addEventListener('click', function() { doSync(this); });
+document.getElementById('nav-sync-now').addEventListener('click', function() { doSync(document.getElementById('btn-sync')); });
+
+loadDashboard();
+</script>
+</body>
+</html>

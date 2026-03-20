@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Careerlog — Setup</title>
+  <link rel="stylesheet" href="../styles/tokens.css">
+  <style>
+    body { min-height: 100vh; background: var(--surface); display: flex; flex-direction: column; align-items: center; padding: 2.5rem 1rem 4rem; }
+
+    .topbar { width: 100%; max-width: 520px; display: flex; align-items: center; gap: 8px; margin-bottom: 2.8rem; }
+    .brand-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--c1); }
+    .brand-name { font-family: 'Manrope', sans-serif; font-size: 16px; font-weight: 600; color: var(--on1); letter-spacing: -.2px; }
+
+    .progress-track { display: flex; align-items: center; gap: 0; margin-bottom: 2.5rem; }
+    .step-circle { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; font-family: 'Manrope', sans-serif; flex-shrink: 0; transition: all .2s; }
+    .step-done   { background: var(--tertiary); color: var(--tert-text); }
+    .step-active { background: var(--on1); color: #fff; }
+    .step-todo   { background: var(--surface2); color: var(--on4); }
+    .step-line   { flex: 1; height: 2px; background: var(--surface3); margin: 0 4px; transition: background .2s; }
+    .step-line.done { background: var(--tertiary); }
+
+    .cards { width: 100%; max-width: 520px; display: flex; flex-direction: column; gap: 1rem; }
+
+    .card { background: #fff; border-radius: 10px; padding: 20px 22px; position: relative; }
+    .card.active { outline: 2px solid var(--c1); }
+    .card.done { opacity: .55; pointer-events: none; }
+
+    .card-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+    .card-step  { font-size: 10px; text-transform: uppercase; letter-spacing: .08em; color: var(--on4); font-family: 'Manrope', sans-serif; }
+    .done-badge { display: flex; align-items: center; gap: 4px; font-size: 10px; color: var(--tert-text); background: var(--tert-bg); padding: 3px 8px; border-radius: 4px; font-weight: 500; }
+
+    .card-title { font-family: 'Manrope', sans-serif; font-size: 15px; font-weight: 600; color: var(--on1); margin-bottom: 4px; letter-spacing: -.2px; }
+    .card-desc  { font-size: 12px; color: var(--on3); line-height: 1.6; margin-bottom: 16px; }
+
+    /* Provider grid */
+    .provider-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-bottom: 14px; }
+    .provider-card { border: 1.5px solid var(--surface3); border-radius: 8px; padding: 12px 8px; cursor: pointer; text-align: center; transition: border-color .15s, background .15s; }
+    .provider-card:hover { border-color: var(--c1); }
+    .provider-card.sel { border-color: var(--c1); background: rgba(155,202,242,.07); }
+    .provider-logo { width: 30px; height: 30px; border-radius: 7px; margin: 0 auto 7px; display: flex; align-items: center; justify-content: center; font-family: 'Manrope', sans-serif; font-size: 12px; font-weight: 700; }
+    .provider-name { font-size: 12px; color: var(--on2); font-weight: 500; }
+    .provider-sub  { font-size: 10px; color: var(--on4); margin-top: 2px; }
+    .free-badge    { font-size: 9px; color: var(--tert-text); background: var(--tert-bg); padding: 1px 6px; border-radius: 3px; margin-top: 4px; display: inline-block; }
+
+    /* Key input */
+    .input-row  { display: flex; gap: 8px; margin-bottom: 6px; }
+    .key-input  { flex: 1; background: var(--surface); border: 1.5px solid var(--surface3); border-radius: 7px; padding: 9px 12px; font-size: 12px; color: var(--on2); outline: none; transition: border-color .15s; }
+    .key-input:focus { border-color: var(--c1); }
+    .key-input::placeholder { color: var(--on4); }
+    .show-btn   { background: var(--surface); border: 1.5px solid var(--surface3); border-radius: 7px; padding: 9px 12px; font-size: 11px; color: var(--on2); cursor: pointer; white-space: nowrap; }
+    .key-hint   { font-size: 10px; color: var(--on4); margin-bottom: 14px; }
+
+    /* Google connect */
+    .google-btn { display: flex; align-items: center; gap: 10px; padding: 12px 14px; border: 1.5px solid var(--surface3); border-radius: 8px; cursor: pointer; margin-bottom: 12px; background: #fff; width: 100%; text-align: left; transition: border-color .15s; }
+    .google-btn:hover { border-color: var(--c1); }
+    .google-ico { width: 24px; height: 24px; border-radius: 5px; border: 1px solid var(--surface3); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .google-txt { flex: 1; }
+    .google-title { font-size: 12px; font-weight: 500; color: var(--on1); }
+    .google-sub   { font-size: 10px; color: var(--on4); margin-top: 1px; }
+
+    /* Scopes */
+    .scope-list { display: flex; flex-direction: column; gap: 5px; margin-bottom: 14px; }
+    .scope-item { display: flex; align-items: center; gap: 7px; font-size: 11px; color: var(--on3); }
+    .scope-ico  { width: 16px; height: 16px; border-radius: 3px; background: var(--tert-bg); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+
+    /* Date range */
+    .date-options { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+    .date-opt { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border: 1.5px solid var(--surface3); border-radius: 8px; cursor: pointer; transition: border-color .15s; }
+    .date-opt:hover { border-color: var(--c1); }
+    .date-opt.sel  { border-color: var(--c1); background: rgba(155,202,242,.06); }
+    .date-opt input { accent-color: var(--c1); }
+    .date-opt-text  { flex: 1; }
+    .date-opt-label { font-size: 12px; font-weight: 500; color: var(--on1); }
+    .date-opt-sub   { font-size: 10px; color: var(--on4); margin-top: 1px; }
+
+    /* Progress */
+    .progress-wrap { display: none; margin-bottom: 14px; }
+    .progress-bar-bg { height: 6px; background: var(--surface2); border-radius: 6px; overflow: hidden; margin-bottom: 8px; }
+    .progress-bar-fill { height: 6px; background: var(--c1); border-radius: 6px; width: 0%; transition: width .4s; }
+    .progress-txt { font-size: 11px; color: var(--on3); }
+
+    /* Done */
+    .done-wrap { display: none; padding: 16px; text-align: center; }
+    .done-ico  { width: 40px; height: 40px; border-radius: 50%; background: var(--tert-bg); display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; }
+    .done-title { font-family: 'Manrope', sans-serif; font-size: 15px; font-weight: 600; color: var(--on1); margin-bottom: 4px; }
+    .done-desc  { font-size: 12px; color: var(--on3); margin-bottom: 16px; }
+
+    /* Buttons */
+    .btn { width: 100%; padding: 10px; border-radius: 7px; font-size: 12px; font-weight: 600; font-family: 'Manrope', sans-serif; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; border: none; transition: opacity .15s; }
+    .btn:disabled { opacity: .4; cursor: not-allowed; }
+    .btn-dark  { background: var(--on1); color: #fff; }
+    .btn-dark:hover:not(:disabled)  { background: #1A1A1C; }
+    .btn-blue  { background: var(--c1); color: var(--on1); }
+    .btn-blue:hover:not(:disabled)  { background: #7BBDF0; }
+    .btn-ghost { background: var(--surface); color: var(--on2); border: 1.5px solid var(--surface3); }
+    .btn-green { background: var(--tertiary); color: var(--tert-text); }
+
+    .error-msg { font-size: 11px; color: var(--danger-txt); background: var(--danger-bg); padding: 8px 12px; border-radius: 6px; margin-bottom: 12px; display: none; }
+  </style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand-dot"></div>
+  <span class="brand-name">Careerlog</span>
+</div>
+
+<!-- Progress track -->
+<div class="progress-track" id="progress-track">
+  <div class="step-circle step-active" id="sc1">1</div>
+  <div class="step-line" id="sl1"></div>
+  <div class="step-circle step-todo"   id="sc2">2</div>
+  <div class="step-line" id="sl2"></div>
+  <div class="step-circle step-todo"   id="sc3">3</div>
+  <div class="step-line" id="sl3"></div>
+  <div class="step-circle step-todo"   id="sc4">4</div>
+</div>
+
+<div class="cards">
+
+  <!-- STEP 1: Provider -->
+  <div class="card active" id="card1">
+    <div class="card-head">
+      <span class="card-step">Step 1 · AI provider</span>
+    </div>
+    <div class="card-title">Choose your AI provider</div>
+    <div class="card-desc">Your API key is stored only in your browser. All email parsing happens on your device.</div>
+    <div class="provider-grid">
+      <div class="provider-card sel" data-provider="gemini">
+        <div class="provider-logo" style="background:#EEF6FF;color:#1A4A7A;">G</div>
+        <div class="provider-name">Gemini</div>
+        <div class="provider-sub">Flash 1.5</div>
+        <div class="free-badge">Free tier</div>
+      </div>
+      <div class="provider-card" data-provider="claude">
+        <div class="provider-logo" style="background:#F5EDD8;color:#7A4A1A;">C</div>
+        <div class="provider-name">Claude</div>
+        <div class="provider-sub">~$0.03 total</div>
+      </div>
+      <div class="provider-card" data-provider="openai">
+        <div class="provider-logo" style="background:#F0F1F2;color:#3A3A3C;">O</div>
+        <div class="provider-name">OpenAI</div>
+        <div class="provider-sub">~$0.03 total</div>
+      </div>
+    </div>
+    <button class="btn btn-blue" id="btn-step1">Continue →</button>
+  </div>
+
+  <!-- STEP 2: API Key -->
+  <div class="card" id="card2">
+    <div class="card-head">
+      <span class="card-step">Step 2 · API key</span>
+      <span class="done-badge" id="badge2" style="display:none;">
+        <svg width="8" height="8" viewBox="0 0 8 8" fill="none"><path d="M1.5 4l2 2 3-3.5" stroke="#1A6A48" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Done
+      </span>
+    </div>
+    <div class="card-title">Paste your API key</div>
+    <div class="card-desc" id="step2-desc">Stored locally in your browser. Never sent anywhere except directly to the AI provider.</div>
+    <div class="error-msg" id="err2"></div>
+    <div class="input-row">
+      <input class="key-input" type="password" id="api-key-input" placeholder="Paste your key here…">
+      <button class="show-btn" id="show-key-btn">Show</button>
+    </div>
+    <div class="key-hint" id="step2-hint">Get a free key at <a href="#" id="key-link">aistudio.google.com</a></div>
+    <button class="btn btn-blue" id="btn-step2" disabled>Verify key →</button>
+  </div>
+
+  <!-- STEP 3: Google Auth -->
+  <div class="card" id="card3">
+    <div class="card-head">
+      <span class="card-step">Step 3 · Connect Google</span>
+      <span class="done-badge" id="badge3" style="display:none;">
+        <svg width="8" height="8" viewBox="0 0 8 8" fill="none"><path d="M1.5 4l2 2 3-3.5" stroke="#1A6A48" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Done
+      </span>
+    </div>
+    <div class="card-title">Sign in with Google</div>
+    <div class="card-desc">We request the minimum permissions. Your emails never leave your browser.</div>
+    <div class="error-msg" id="err3"></div>
+    <button class="google-btn" id="btn-google">
+      <div class="google-ico">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+          <path d="M13 7.14c0-.47-.04-.92-.11-1.36H7v2.57h3.37a2.88 2.88 0 0 1-1.25 1.89v1.57h2.02C12.34 10.67 13 9.04 13 7.14z" fill="#4285F4"/>
+          <path d="M7 13c1.69 0 3.11-.56 4.14-1.52l-2.02-1.57a3.87 3.87 0 0 1-5.77-2.04H1.28v1.62A6 6 0 0 0 7 13z" fill="#34A853"/>
+          <path d="M3.35 7.87A3.6 3.6 0 0 1 3.16 7c0-.3.05-.6.19-.87V4.51H1.28A6 6 0 0 0 1 7c0 .97.23 1.88.28 2.49l2.07-1.62z" fill="#FBBC05"/>
+          <path d="M7 3.13c.95 0 1.8.33 2.47.96l1.85-1.85A6 6 0 0 0 1.28 4.51l2.07 1.62C3.91 4.39 5.3 3.13 7 3.13z" fill="#EA4335"/>
+        </svg>
+      </div>
+      <div class="google-txt">
+        <div class="google-title">Continue with Google</div>
+        <div class="google-sub">Opens Google's own secure login</div>
+      </div>
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5.5 3.5L9 7l-3.5 3.5" stroke="#A8A8B0" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <div class="scope-list">
+      <div class="scope-item">
+        <div class="scope-ico"><svg width="8" height="8" viewBox="0 0 8 8" fill="none"><path d="M1.5 4l2 2 3-3" stroke="#1A6A48" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        gmail.readonly — read only, cannot send or delete
+      </div>
+      <div class="scope-item">
+        <div class="scope-ico"><svg width="8" height="8" viewBox="0 0 8 8" fill="none"><path d="M1.5 4l2 2 3-3" stroke="#1A6A48" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        spreadsheets — read and write your own sheet
+      </div>
+      <div class="scope-item">
+        <div class="scope-ico"><svg width="8" height="8" viewBox="0 0 8 8" fill="none"><path d="M1.5 4l2 2 3-3" stroke="#1A6A48" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        drive.file — only files this extension creates
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 4: Sheet + Initial Sync -->
+  <div class="card" id="card4">
+    <div class="card-head">
+      <span class="card-step">Step 4 · Initial sync</span>
+    </div>
+    <div class="card-title">Set up your tracker</div>
+    <div class="card-desc">We'll create a formatted Google Sheet and scan your inbox for job emails.</div>
+
+    <div class="date-options" id="date-options">
+      <label class="date-opt sel" id="opt-15">
+        <input type="radio" name="dateRange" value="last15">
+        <div class="date-opt-text">
+          <div class="date-opt-label">Last 15 days</div>
+          <div class="date-opt-sub">Fast · good if you've been active recently</div>
+        </div>
+      </label>
+      <label class="date-opt" id="opt-30">
+        <input type="radio" name="dateRange" value="last30" checked>
+        <div class="date-opt-text">
+          <div class="date-opt-label">Last 30 days</div>
+          <div class="date-opt-sub">Recommended · covers most job searches</div>
+        </div>
+      </label>
+      <label class="date-opt" id="opt-all">
+        <input type="radio" name="dateRange" value="all">
+        <div class="date-opt-text">
+          <div class="date-opt-label">All time</div>
+          <div class="date-opt-sub">Thorough · may take a few minutes</div>
+        </div>
+      </label>
+    </div>
+
+    <div class="progress-wrap" id="progress-wrap">
+      <div class="progress-bar-bg"><div class="progress-bar-fill" id="prog-fill"></div></div>
+      <div class="progress-txt" id="prog-txt">Scanning your inbox…</div>
+    </div>
+
+    <div class="done-wrap" id="done-wrap">
+      <div class="done-ico">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4 10l4 4 8-8" stroke="#1A6A48" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="done-title">All done!</div>
+      <div class="done-desc">Found <strong id="done-count">0</strong> job applications. Your sheet is ready.</div>
+      <button class="btn btn-green" id="btn-open-sheet">Open my sheet →</button>
+    </div>
+
+    <div class="error-msg" id="err4"></div>
+    <button class="btn btn-blue" id="btn-step4" disabled>Create sheet &amp; start syncing →</button>
+  </div>
+
+</div>
+
+<script src="onboarding.js"></script>
+</body>
+</html>

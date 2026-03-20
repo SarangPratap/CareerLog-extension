@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=320px">
+  <title>Careerlog</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600&family=Inter:wght@400;500&display=swap');
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --c1:#9BCAF2; --c4:#F2D6B3;
+      --on1:#0D0D0D; --on3:#7A7A80; --on4:#A8A8B0;
+      --tertiary:#8BD6B4; --tert-bg:#D6F2E8; --tert-text:#1A6A48;
+      --danger-bg:#F2C2C2; --danger-txt:#7A2A2A;
+    }
+    body { width: 320px; background: var(--on1); font-family: 'Inter', sans-serif; color: #fff; }
+
+    .topbar { padding: 13px 16px; border-bottom: 1px solid rgba(255,255,255,.07);
+      display: flex; align-items: center; justify-content: space-between; }
+    .brand { display: flex; align-items: center; gap: 7px; }
+    .brand-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--c1); }
+    .brand-name { font-family: 'Manrope', sans-serif; font-size: 14px; font-weight: 600;
+      color: #fff; letter-spacing: -.2px; }
+    .top-right { display: flex; align-items: center; gap: 8px; }
+    .live-chip { display: flex; align-items: center; gap: 4px; font-size: 10px; color: rgba(255,255,255,.4); }
+    .live-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--tertiary);
+      animation: blink 2s infinite; }
+    @keyframes blink { 0%,100%{opacity:1;} 50%{opacity:.2;} }
+    .settings-btn { font-size: 11px; color: rgba(255,255,255,.4); background: rgba(255,255,255,.07);
+      border: none; border-radius: 4px; padding: 4px 9px; cursor: pointer; font-family: 'Inter', sans-serif; }
+    .settings-btn:hover { background: rgba(255,255,255,.12); color: rgba(255,255,255,.8); }
+
+    .body { padding: 16px; }
+
+    /* Stats */
+    .stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 18px; }
+    .stat { background: rgba(255,255,255,.05); border-radius: 7px; padding: 11px 10px 9px; text-align: center; }
+    .stat-val { font-family: 'Manrope', sans-serif; font-size: 22px; font-weight: 500;
+      color: #fff; letter-spacing: -.5px; line-height: 1; margin-bottom: 4px; }
+    .stat-label { font-size: 9px; color: rgba(255,255,255,.35); text-transform: uppercase; letter-spacing: .07em; }
+    .stat-sub { font-size: 9px; color: var(--tertiary); margin-top: 2px; }
+
+    /* Activity */
+    .section-label { font-size: 9px; text-transform: uppercase; letter-spacing: .1em;
+      color: rgba(255,255,255,.3); margin-bottom: 9px; font-family: 'Manrope', sans-serif; }
+    .feed { display: flex; flex-direction: column; gap: 5px; margin-bottom: 16px; }
+    .feed-item { display: flex; align-items: center; gap: 8px; padding: 8px 10px;
+      background: rgba(255,255,255,.04); border-radius: 7px; }
+    .feed-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+    .feed-text { font-size: 11px; color: rgba(255,255,255,.55); flex: 1; line-height: 1.4; }
+    .feed-text b { color: rgba(255,255,255,.85); font-weight: 500; }
+    .feed-time { font-size: 10px; color: rgba(255,255,255,.25); white-space: nowrap; }
+    .feed-empty { font-size: 11px; color: rgba(255,255,255,.3); text-align: center; padding: 12px; }
+
+    /* Actions */
+    .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px; }
+    .btn { padding: 9px; border-radius: 7px; font-size: 11px; font-weight: 500;
+      display: flex; align-items: center; justify-content: center; gap: 5px; border: none; cursor: pointer; }
+    .btn-primary { background: var(--c1); color: var(--on1); }
+    .btn-primary:hover { background: #7BBDF0; }
+    .btn-secondary { background: rgba(255,255,255,.07); color: rgba(255,255,255,.65); }
+    .btn-secondary:hover { background: rgba(255,255,255,.12); }
+    .btn:disabled { opacity: .4; cursor: not-allowed; }
+    .btn-full { grid-column: 1/-1; background: rgba(155,202,242,.12); color: var(--c1);
+      border: 1px solid rgba(155,202,242,.25); }
+    .btn-full:hover { background: rgba(155,202,242,.2); }
+
+    /* Footer */
+    .footer { padding: 10px 16px; border-top: 1px solid rgba(255,255,255,.07);
+      display: flex; align-items: center; justify-content: space-between; }
+    .footer-ai { font-size: 9px; color: rgba(255,255,255,.3); display: flex; align-items: center; gap: 4px; }
+    .footer-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--c4); }
+    .footer-cost { font-size: 9px; color: var(--tertiary); }
+
+    /* Not setup state */
+    .setup-prompt { padding: 24px 16px; text-align: center; }
+    .setup-title { font-family: 'Manrope', sans-serif; font-size: 15px; font-weight: 600;
+      color: #fff; margin-bottom: 8px; }
+    .setup-desc { font-size: 11px; color: rgba(255,255,255,.45); margin-bottom: 18px; line-height: 1.6; }
+    .btn-setup { width: 100%; padding: 10px; background: var(--c1); color: var(--on1);
+      border-radius: 7px; font-size: 12px; font-weight: 600; font-family: 'Manrope', sans-serif;
+      border: none; cursor: pointer; }
+
+    /* Error banner */
+    .error-banner { background: rgba(242,194,194,.12); border: 1px solid rgba(242,194,194,.3);
+      border-radius: 6px; padding: 8px 12px; margin-bottom: 12px; font-size: 11px;
+      color: #F2C2C2; line-height: 1.5; display: none; }
+
+    /* Sync state */
+    #sync-state { font-size: 10px; color: rgba(255,255,255,.35); text-align: center;
+      padding: 4px 0 8px; }
+  </style>
+</head>
+<body>
+
+<!-- NOT SETUP STATE -->
+<div id="state-setup" style="display:none;">
+  <div class="topbar">
+    <div class="brand">
+      <div class="brand-dot"></div>
+      <span class="brand-name">Careerlog</span>
+    </div>
+  </div>
+  <div class="setup-prompt">
+    <div class="setup-title">Track jobs automatically</div>
+    <div class="setup-desc">Connect Gmail, paste your AI key, and let Careerlog fill your sheet — hands-free.</div>
+    <button class="btn-setup" id="btn-go-setup">Get started →</button>
+  </div>
+</div>
+
+<!-- ACTIVE STATE -->
+<div id="state-active" style="display:none;">
+  <div class="topbar">
+    <div class="brand">
+      <div class="brand-dot"></div>
+      <span class="brand-name">Careerlog</span>
+    </div>
+    <div class="top-right">
+      <div class="live-chip" id="live-chip">
+        <div class="live-dot"></div>
+        <span id="live-label">live</span>
+      </div>
+      <button class="settings-btn" id="btn-settings">Settings</button>
+    </div>
+  </div>
+
+  <div class="body">
+    <div class="error-banner" id="error-banner"></div>
+
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-val" id="stat-applied">–</div>
+        <div class="stat-label">applied</div>
+      </div>
+      <div class="stat">
+        <div class="stat-val" id="stat-interviews">–</div>
+        <div class="stat-label">interviews</div>
+        <div class="stat-sub" id="stat-interviews-sub"></div>
+      </div>
+      <div class="stat">
+        <div class="stat-val" id="stat-offers">–</div>
+        <div class="stat-label">offers</div>
+      </div>
+    </div>
+
+    <div class="section-label">Latest activity</div>
+    <div class="feed" id="activity-feed">
+      <div class="feed-empty">No activity yet — sync to get started</div>
+    </div>
+
+    <div id="sync-state"></div>
+
+    <div class="actions">
+      <button class="btn btn-primary" id="btn-open-sheet">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+          <rect x=".5" y=".5" width="11" height="11" rx="1.5" stroke="currentColor" stroke-width="1.1"/>
+          <path d="M3.5.5v11M.5 4h11M.5 8h11" stroke="currentColor" stroke-width="1.1"/>
+        </svg>
+        Open sheet
+      </button>
+      <button class="btn btn-secondary" id="btn-sync-now">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+          <path d="M10.5 6A4.5 4.5 0 1 1 6 1.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+          <path d="M6 1.5l1.5 1.5L6 4.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Sync now
+      </button>
+      <button class="btn btn-full" id="btn-open-dashboard">View full dashboard →</button>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div class="footer-ai">
+      <div class="footer-dot"></div>
+      <span id="footer-provider">–</span>
+    </div>
+    <div class="footer-cost" id="footer-cost">$0.00 this month</div>
+  </div>
+</div>
+
+<script src="popup.js"></script>
+</body>
+</html>

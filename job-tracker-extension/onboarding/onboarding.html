@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Careerlog Onboarding</title>
+  <link rel="stylesheet" href="../styles/tokens.css">
+  <link rel="stylesheet" href="../styles/onboarding.css">
+</head>
+<body>
+  <main class="onboarding-wrap">
+    <header class="hero">
+      <p class="eyebrow">Careerlog Setup</p>
+      <h1 class="brand">Make Your Tracker Live In 4 Steps</h1>
+      <p class="subtitle">Your Gmail, your AI key, your own Google Sheet. No backend.</p>
+    </header>
+
+    <ol class="progress" aria-label="Setup progress">
+      <li class="done"><span>1</span><label>Provider</label></li>
+      <li><span>2</span><label>API Key</label></li>
+      <li><span>3</span><label>Google</label></li>
+      <li><span>4</span><label>Sheet</label></li>
+    </ol>
+
+    <section class="card step active" id="step-1" data-step="1">
+      <h2>Step 1 - Choose AI provider</h2>
+      <div class="provider-grid">
+        <button class="provider selected" data-provider="gemini" type="button">
+          <strong>Gemini</strong>
+          <span class="chip">free tier</span>
+        </button>
+        <button class="provider" data-provider="claude" type="button"><strong>Claude</strong></button>
+        <button class="provider" data-provider="openai" type="button"><strong>OpenAI</strong></button>
+      </div>
+      <button id="to-step-2" class="cta" type="button">Continue</button>
+    </section>
+
+    <section class="card step" id="step-2" data-step="2">
+      <h2>Step 2 - Paste API key</h2>
+      <label for="api-key" class="label">API Key</label>
+      <div class="key-row">
+        <input id="api-key" type="password" placeholder="Paste your key" autocomplete="off">
+        <button id="toggle-key" type="button" class="ghost">Show</button>
+      </div>
+      <a id="key-link" class="hint" href="https://aistudio.google.com/app/apikey" target="_blank" rel="noreferrer">Get key from provider</a>
+      <button id="save-key" class="cta" type="button">Save Key</button>
+    </section>
+
+    <section class="card step" id="step-3" data-step="3">
+      <h2>Step 3 - Connect Google</h2>
+      <button id="connect-google" class="google-btn" type="button" disabled>Connect Google Account</button>
+      <ul class="scope-list">
+        <li>gmail.readonly</li>
+        <li>spreadsheets</li>
+        <li>drive.file</li>
+      </ul>
+    </section>
+
+    <section class="card step" id="step-4" data-step="4">
+      <h2>Step 4 - Sheet setup</h2>
+      <label for="first-sync-window" class="label">Initial Sync Range</label>
+      <select id="first-sync-window">
+        <option value="15">Last 15 days</option>
+        <option value="30" selected>Last 30 days</option>
+        <option value="all">All time</option>
+      </select>
+      <div class="sheet-preview">
+        <p class="sheet-name" id="sheet-name">Job Tracker 2026</p>
+        <p>Applications - Interview Log - auto-formatted</p>
+      </div>
+      <button id="create-sheet" class="cta" type="button" disabled>Create My Sheet</button>
+      <div id="sync-progress-wrap" class="hidden">
+        <p id="sync-progress-label">Preparing sync...</p>
+        <progress id="sync-progress" value="0" max="100"></progress>
+      </div>
+      <a id="open-sheet" class="ghost-link hidden" href="#">Open Sheet</a>
+    </section>
+
+    <p id="status" class="status" role="status" aria-live="polite"></p>
+  </main>
+
+  <script src="../lib/auth.js"></script>
+  <script src="../lib/sheets.js"></script>
+  <script src="./onboarding.js"></script>
+</body>
+</html>
