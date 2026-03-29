@@ -1,0 +1,57 @@
+{
+  "manifest_version": 3,
+  "name": "Careerlog — Job Tracker",
+  "version": "1.0.0",
+  "description": "Automatically tracks job applications from Gmail into your Google Sheet. Your data never leaves your browser.",
+
+  "permissions": [
+    "identity",
+    "storage",
+    "alarms",
+    "tabs"
+  ],
+
+  "host_permissions": [
+    "https://*/*",
+    "http://localhost/*",
+    "http://127.0.0.1/*",
+    "https://www.googleapis.com/*",
+    "https://gmail.googleapis.com/*",
+    "https://sheets.googleapis.com/*",
+    "https://api.anthropic.com/*",
+    "https://generativelanguage.googleapis.com/*",
+    "https://api.openai.com/*"
+  ],
+
+  "background": {
+    "service_worker": "background.js"
+  },
+
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_icon": {
+      "16":  "icons/icon16.png",
+      "48":  "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+
+  "options_page": "onboarding/onboarding.html",
+
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
+  },
+
+  "oauth2": {
+    "client_id": "338990094029-hn9rjm12modnh2r8p1a499lkt4sdu26v.apps.googleusercontent.com",
+    "scopes": [
+      "https://www.googleapis.com/auth/gmail.readonly",
+      "https://www.googleapis.com/auth/spreadsheets"
+    ]
+  },
+
+  "web_accessible_resources": [{
+    "resources": ["dashboard/dashboard.html"],
+    "matches": ["<all_urls>"]
+  }]
+}
