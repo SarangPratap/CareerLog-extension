@@ -130,7 +130,7 @@ python scripts/generate_icons.py
 
 1. Open `chrome://extensions`.
 2. Enable Developer mode.
-3. Click Load unpacked.
+3. Unizip this Repository and Click Load unpacked.
 4. Select this project folder.
 
 ### 4. Complete Onboarding
@@ -157,7 +157,7 @@ Local setup example:
 - Provider: Custom / Local Model
 - Custom API Type: Ollama
 - Base URL: http://localhost:11434
-- Model: llama3.1
+- Model: llama3
 - API key: optional
 
 ---
