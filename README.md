@@ -11,7 +11,7 @@ There is no app backend. Data remains in the user's Google account and configure
 ## Product Preview
 
 <p align="center">
-  <img src="docs/screenshots/dashboard.png" alt="Careerlog dashboard preview" width="74%" />
+  <img src="docs/screenshots/dashboard.png" alt="Careerlog dashboard preview" width="100%" />
 </p>
 <p align="center">
   <img src="docs/screenshots/Dashboard2.png" alt="Careerlog popup preview" width="38%" />
