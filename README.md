@@ -250,6 +250,21 @@ Short version:
 
 ---
 
+## Go Live (Chrome Web Store)
+
+You can publish Careerlog as a live extension on the Chrome Web Store.
+
+- Launch checklist: `CHROME_WEB_STORE_LAUNCH_CHECKLIST.md`
+- Privacy policy source: `PRIVACY_POLICY.md`
+
+Before submission, confirm:
+
+- production OAuth setup is complete
+- store listing assets are prepared
+- privacy policy is hosted at a public URL for the store form
+
+---
+
 ## Bug Reports And Contact
 
 Found a bug or unexpected behavior?

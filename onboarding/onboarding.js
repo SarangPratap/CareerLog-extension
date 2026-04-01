@@ -118,6 +118,51 @@ function isLikelyOllamaBaseUrl(baseUrl) {
   return path.indexOf('/api/chat') !== -1 || path.indexOf('/api/generate') !== -1;
 }
 
+function toOriginPattern(baseUrl) {
+  var parsed;
+  try {
+    parsed = new URL(baseUrl);
+  } catch (e) {
+    return '';
+  }
+  return parsed.protocol + '//' + parsed.host + '/*';
+}
+
+function requestOriginPermission(originPattern) {
+  return new Promise(function(resolve, reject) {
+    chrome.permissions.contains({ origins: [originPattern] }, function(hasPermission) {
+      if (chrome.runtime.lastError) {
+        reject(new Error(chrome.runtime.lastError.message));
+        return;
+      }
+      if (hasPermission) {
+        resolve(true);
+        return;
+      }
+
+      chrome.permissions.request({ origins: [originPattern] }, function(granted) {
+        if (chrome.runtime.lastError) {
+          reject(new Error(chrome.runtime.lastError.message));
+          return;
+        }
+        if (!granted) {
+          reject(new Error('Permission denied for custom API host: ' + originPattern));
+          return;
+        }
+        resolve(true);
+      });
+    });
+  });
+}
+
+async function ensureCustomHostPermission(baseUrl) {
+  var originPattern = toOriginPattern(baseUrl);
+  if (!originPattern) {
+    throw new Error('Invalid custom API base URL.');
+  }
+  await requestOriginPermission(originPattern);
+}
+
 async function verifyCustomProviderConfig() {
   var baseUrl = customApiBaseInputEl.value.trim();
   var model = customModelInputEl.value.trim();
@@ -130,6 +175,8 @@ async function verifyCustomProviderConfig() {
   if (!isAllowedCustomBaseUrl(baseUrl)) {
     throw new Error('Custom API base URL must be https://, or http://localhost/127.0.0.1 for local models.');
   }
+
+  await ensureCustomHostPermission(baseUrl);
 
   var response = await chrome.runtime.sendMessage({
     type: 'VERIFY_CUSTOM_PROVIDER',
