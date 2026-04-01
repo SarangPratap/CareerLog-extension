@@ -1,12 +1,10 @@
 # Careerlog
 
-Careerlog automatically tracks job applications from Gmail into Google Sheets.
+Careerlog is a free Chrome extension that automatically tracks job applications from Gmail into Google Sheets.
 
-You connect your account once, pick your AI provider, and your pipeline stays updated without manual copy-paste.
+It reads job-related inbox updates, extracts structured information, and keeps an application tracker up to date.
 
-No backend. No monthly platform dependency. Your data remains in your Google account.
-
-This extension is free to use.
+There is no app backend. Data remains in the user's Google account and configured provider services.
 
 ---
 
@@ -21,31 +19,13 @@ This extension is free to use.
 
 ---
 
-## The Product
+## Overview
 
-Job searching breaks when tracking is manual.
+Careerlog supports the full tracking workflow:
 
-Careerlog fixes that by turning inbox updates into a clean application pipeline:
-
-- Application confirmations become new tracker rows.
-- Interview/rejection/offer updates modify existing records.
-- Dashboard and popup show progress, status, and activity.
-
-This project is built to be sold by you as a direct product for job seekers who want automation with privacy.
-
----
-
-## Why Users Will Pay For This
-
-- Saves time daily: no repeated spreadsheet admin.
-- Reduces mistakes: fewer missed status updates.
-- Gives visibility: one place to monitor interviews and offers.
-- Feels trustworthy: user controls inbox, sheet, and API keys.
-- Works with budget: Gemini free tier, paid cloud models, or local models.
-
-Simple value proposition:
-
-"Stop managing your tracker. Let your inbox update it for you."
+- Application confirmations can be added as new tracker rows.
+- Interview/rejection/offer updates can update existing records.
+- Popup and dashboard provide sync status, summary metrics, and activity.
 
 ---
 
@@ -100,8 +80,6 @@ Simple value proposition:
 - Custom provider URLs are validated (`https://` or localhost HTTP).
 - AI responses are checked before write operations.
 
-If privacy is your marketing wedge, this section is your strongest advantage.
-
 ---
 
 ## Quick Start
@@ -130,7 +108,7 @@ python scripts/generate_icons.py
 
 1. Open `chrome://extensions`.
 2. Enable Developer mode.
-3. Unizip this Repository and Click Load unpacked.
+3. Unzip this repository and click Load unpacked.
 4. Select this project folder.
 
 ### 4. Complete Onboarding
@@ -237,31 +215,6 @@ Low detection quality:
 
 - Review Gmail patterns and ATS domain coverage.
 - Run manual sync after recent application activity.
-
----
-
-## Positioning You Can Use Publicly
-
-Careerlog is the automated tracker for job seekers who want results without giving up data ownership.
-
-Short version:
-
-"Your inbox already knows your job search. Careerlog turns it into a live tracker."
-
----
-
-## Go Live (Chrome Web Store)
-
-You can publish Careerlog as a live extension on the Chrome Web Store.
-
-- Launch checklist: `CHROME_WEB_STORE_LAUNCH_CHECKLIST.md`
-- Privacy policy source: `PRIVACY_POLICY.md`
-
-Before submission, confirm:
-
-- production OAuth setup is complete
-- store listing assets are prepared
-- privacy policy is hosted at a public URL for the store form
 
 ---
 
