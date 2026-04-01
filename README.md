@@ -1,7 +1,7 @@
 <p align="center">
   <img src="docs/screenshots/dashboard.png" alt="Careerlog dashboard preview" width="100%" />
 </p>
-# Careerlog
+## Careerlog
 
 Careerlog is a free Chrome extension that automatically tracks job applications from Gmail into Google Sheets.
 
