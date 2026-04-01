@@ -51,6 +51,17 @@ function getStatusLabel(status) {
   return status.replace(/^[^\w]+/, '');
 }
 
+function hasInterviewSignal(app) {
+  var status = String(app.status || '').toLowerCase();
+  var rounds = parseInt(app.rounds, 10) || 0;
+  if (rounds > 0) return true;
+  return status.indexOf('interview') !== -1
+    || status.indexOf('phone') !== -1
+    || status.indexOf('technical') !== -1
+    || status.indexOf('final') !== -1
+    || status.indexOf('round') !== -1;
+}
+
 function renderApps(apps, filter) {
   var filtered = apps;
   if (filter === 'active') {
@@ -127,16 +138,41 @@ function renderActivity(log) {
   feed.innerHTML = html;
 }
 
+function toSortableDate(value) {
+  if (!value) return 0;
+  var trimmed = String(value).trim();
+  var iso = /^\d{4}-\d{2}-\d{2}$/;
+  if (iso.test(trimmed)) {
+    return new Date(trimmed + 'T00:00:00Z').getTime();
+  }
+  var parsed = new Date(trimmed).getTime();
+  return Number.isNaN(parsed) ? 0 : parsed;
+}
+
 function getAppsFromSheet(sheetId, token, callback) {
-  fetch('https://sheets.googleapis.com/v4/spreadsheets/' + sheetId + '/values/Applications!A:F', {
+  fetch('https://sheets.googleapis.com/v4/spreadsheets/' + sheetId + '/values/Applications!A:H', {
     headers: { 'Authorization': 'Bearer ' + token }
   })
     .then(function(r) { return r.json(); })
     .then(function(data) {
       var rows = (data.values || []).slice(1);
       var apps = rows.map(function(r) {
-        return { company: r[0], role: r[1], date: r[2], status: r[3], rounds: r[5] };
+        return {
+          company: r[0],
+          role: r[1],
+          date: r[2],
+          status: r[3],
+          lastUpdated: r[4],
+          rounds: r[5]
+        };
       });
+
+      apps.sort(function(a, b) {
+        var bTs = toSortableDate(b.lastUpdated) || toSortableDate(b.date);
+        var aTs = toSortableDate(a.lastUpdated) || toSortableDate(a.date);
+        return bTs - aTs;
+      });
+
       callback(null, apps);
     })
     .catch(function(e) { callback(e); });
@@ -174,7 +210,7 @@ function loadDashboard() {
           }
           document.getElementById('stat-total').textContent = apps.length;
           var interviews = apps.filter(function(a) {
-            return a.status && (a.status.indexOf('Interview') !== -1 || a.status.indexOf('Phone') !== -1);
+            return hasInterviewSignal(a);
           }).length;
           var offers = apps.filter(function(a) {
             return a.status && a.status.indexOf('Offer') !== -1;

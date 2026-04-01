@@ -32,6 +32,48 @@ function setActivity(feed, items) {
   });
 }
 
+function hasInterviewSignal(row) {
+  var s = String(row[3] || '').toLowerCase();
+  var rounds = parseInt(row[5], 10) || 0;
+  if (rounds > 0) return true;
+  return s.indexOf('interview') !== -1
+    || s.indexOf('phone') !== -1
+    || s.indexOf('technical') !== -1
+    || s.indexOf('final') !== -1
+    || s.indexOf('round') !== -1;
+}
+
+function loadSheetStats(sheetId, callback) {
+  chrome.identity.getAuthToken({ interactive: false }, function(token) {
+    if (!token) {
+      callback(new Error('No auth token'));
+      return;
+    }
+
+    fetch('https://sheets.googleapis.com/v4/spreadsheets/' + sheetId + '/values/Applications!A:H', {
+      headers: { 'Authorization': 'Bearer ' + token }
+    })
+      .then(function(res) { return res.json(); })
+      .then(function(data) {
+        var rows = (data.values || []).slice(1);
+        var applications = rows.length;
+        var interviews = rows.filter(function(r) {
+          return hasInterviewSignal(r);
+        }).length;
+        var offers = rows.filter(function(r) {
+          return String(r[3] || '').toLowerCase().indexOf('offer') !== -1;
+        }).length;
+
+        callback(null, {
+          applications: applications,
+          interviews: interviews,
+          offers: offers
+        });
+      })
+      .catch(function(err) { callback(err); });
+  });
+}
+
 async function init() {
   chrome.runtime.sendMessage({ type: 'GET_STATUS' }, function(status) {
     var setup  = document.getElementById('state-setup');
@@ -68,9 +110,18 @@ async function init() {
 
     // Stats from sheet
     if (status.sheetId) {
-      document.getElementById('stat-applied').textContent    = status.totalProcessed || '–';
-      document.getElementById('stat-interviews').textContent = '–';
-      document.getElementById('stat-offers').textContent     = '–';
+      loadSheetStats(status.sheetId, function(err, stats) {
+        if (err || !stats) {
+          document.getElementById('stat-applied').textContent = '–';
+          document.getElementById('stat-interviews').textContent = '–';
+          document.getElementById('stat-offers').textContent = '–';
+          return;
+        }
+
+        document.getElementById('stat-applied').textContent = stats.applications;
+        document.getElementById('stat-interviews').textContent = stats.interviews;
+        document.getElementById('stat-offers').textContent = stats.offers;
+      });
     }
 
     // Activity feed from storage

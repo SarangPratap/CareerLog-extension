@@ -50,6 +50,14 @@
     .show-btn   { background: var(--surface); border: 1.5px solid var(--surface3); border-radius: 7px; padding: 9px 12px; font-size: 11px; color: var(--on2); cursor: pointer; white-space: nowrap; }
     .key-hint   { font-size: 10px; color: var(--on4); margin-bottom: 14px; }
 
+    .custom-config { display: none; gap: 8px; margin-bottom: 12px; }
+    .custom-config.on { display: grid; }
+    .mini-label { font-size: 11px; color: var(--on3); display: grid; gap: 5px; }
+    .mini-select, .mini-input { background: var(--surface); border: 1.5px solid var(--surface3); border-radius: 7px; padding: 9px 10px; font-size: 12px; color: var(--on2); }
+    .mini-row { display: grid; grid-template-columns: auto 1fr; gap: 8px; align-items: center; }
+    .mini-status { font-size: 11px; color: var(--on3); min-height: 16px; }
+    .mini-status.err { color: var(--danger-txt); }
+
     /* Google connect */
     .google-btn { display: flex; align-items: center; gap: 10px; padding: 12px 14px; border: 1.5px solid var(--surface3); border-radius: 8px; cursor: pointer; margin-bottom: 12px; background: #fff; width: 100%; text-align: left; transition: border-color .15s; }
     .google-btn:hover { border-color: var(--c1); }
@@ -167,6 +175,24 @@
       <input class="key-input" type="password" id="api-key-input" placeholder="Paste your key here…">
       <button class="show-btn" id="show-key-btn">Show</button>
     </div>
+    <div class="custom-config" id="custom-config">
+      <label class="mini-label" for="custom-api-type-input">Custom API Type
+        <select class="mini-select" id="custom-api-type-input">
+          <option value="openai">OpenAI-compatible (/v1/chat/completions)</option>
+          <option value="ollama">Ollama (/api/chat, fallback /api/generate)</option>
+        </select>
+      </label>
+      <label class="mini-label" for="custom-api-base-input">Custom API Base URL
+        <input class="mini-input" id="custom-api-base-input" type="text" placeholder="https://api.example.com or http://localhost:11434">
+      </label>
+      <label class="mini-label" for="custom-model-input">Custom Model
+        <input class="mini-input" id="custom-model-input" type="text" placeholder="llama3.1 or provider model name">
+      </label>
+      <div class="mini-row">
+        <button class="show-btn" id="verify-custom-btn" type="button">Verify custom API</button>
+        <span class="mini-status" id="verify-custom-status" role="status" aria-live="polite"></span>
+      </div>
+    </div>
     <div class="key-hint" id="step2-hint">Get a free key at <a href="#" id="key-link">aistudio.google.com</a></div>
     <button class="btn btn-blue" id="btn-step2">Skip for now →</button>
   </div>
@@ -233,13 +259,6 @@
           <div class="date-opt-sub">Recommended · covers most job searches</div>
         </div>
       </label>
-      <label class="date-opt" id="opt-all">
-        <input type="radio" name="dateRange" value="all">
-        <div class="date-opt-text">
-          <div class="date-opt-label">All time</div>
-          <div class="date-opt-sub">Thorough · may take a few minutes</div>
-        </div>
-      </label>
     </div>
 
     <div class="progress-wrap" id="progress-wrap">
@@ -252,7 +271,7 @@
         <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4 10l4 4 8-8" stroke="#1A6A48" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </div>
       <div class="done-title">All done!</div>
-      <div class="done-desc">Found <strong id="done-count">0</strong> job applications. Your sheet is ready.</div>
+      <div class="done-desc">Parsed <strong id="done-count">0</strong> email events. Your sheet is ready.</div>
       <button class="btn btn-green" id="btn-open-sheet">Open my sheet →</button>
     </div>
 
@@ -262,6 +281,7 @@
 
 </div>
 
+<script src="../lib/auth.js"></script>
 <script src="onboarding.js"></script>
 </body>
 </html>

@@ -85,6 +85,7 @@ chrome.runtime.onMessage.addListener(function(msg, sender, sendResponse) {
 // Called once from onboarding after user picks date range.
 
 async function runInitialSync(dateRange) {
+  var normalizedDateRange = (dateRange === 'last15') ? 'last15' : 'last30';
   await chrome.storage.local.set({ syncInProgress: true, syncProgress: 0, totalProcessed: 0 });
 
   try {
@@ -93,7 +94,7 @@ async function runInitialSync(dateRange) {
       'customApiBaseUrl','customModel','accountSheetMap','currentGoogleEmail'
     ]);
     if (!stored.aiProvider) {
-      throw new Error('Setup incomplete');
+      throw new Error('Setup incomplete: AI provider is missing. Complete onboarding Step 1 and select a provider.');
     }
     if (providerNeedsApiKey(stored.aiProvider) && !stored.aiApiKey) {
       throw new Error('Setup incomplete: selected provider requires an API key.');
@@ -104,7 +105,7 @@ async function runInitialSync(dateRange) {
 
     var accessToken    = await getValidToken({ interactive: false });
     var sheetBinding   = await ensureAccountSheetBinding(stored, accessToken);
-    var emails         = await fetchInitialEmails(accessToken, dateRange);
+    var emails         = await fetchInitialEmails(accessToken, normalizedDateRange);
 
     console.log('[Careerlog] Initial sync — found ' + emails.length + ' candidate emails');
 
@@ -116,6 +117,7 @@ async function runInitialSync(dateRange) {
 
       var jobData = await parseJobEmail(email.subject, email.body, stored.aiApiKey, stored.aiProvider);
       if (!jobData) continue;
+      jobData.sourceEmailDate = email.date || '';
 
       await processAndUpdateSheet(jobData, sheetBinding.sheetId, accessToken);
       processed++;
@@ -214,6 +216,7 @@ async function catchUpMissedEmailsInternal(isManualSync) {
 
       var jobData = await parseJobEmail(email.subject, email.body, stored.aiApiKey, stored.aiProvider);
       if (!jobData) continue;
+      jobData.sourceEmailDate = email.date || '';
 
       await processAndUpdateSheet(jobData, sheetBinding.sheetId, accessToken);
       processed++;

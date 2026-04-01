@@ -16,6 +16,7 @@
     .row { display: grid; grid-template-columns: 1fr auto; gap: 10px; }
     .toggles { display: grid; gap: 8px; }
     .toggle { display: flex; align-items: center; gap: 8px; }
+    .hint { font-size: 12px; color: var(--on4); }
     button { border: none; border-radius: 10px; padding: 11px 14px; cursor: pointer; font-family: 'Manrope', sans-serif; font-weight: 600; }
     .cta { background: var(--c1); color: var(--on1); }
     .ghost { background: var(--surface2); color: var(--on2); }
@@ -71,6 +72,7 @@
           <button id="toggle-key" class="ghost" type="button">Show</button>
         </div>
       </label>
+      <p id="api-key-hint" class="hint">Only require API key for cloud providers. You can leave this empty for local providers.</p>
 
       <label for="sensitivity">Email Sensitivity
         <select id="sensitivity">
@@ -133,7 +135,6 @@
         <select id="diag-initial-range">
           <option value="last15">Initial Sync: Last 15 days</option>
           <option value="last30" selected>Initial Sync: Last 30 days</option>
-          <option value="all">Initial Sync: All time</option>
         </select>
         <button id="diag-run-initial" class="ghost" type="button">Run Initial Sync</button>
       </div>

@@ -10,6 +10,7 @@ const customModelEl = document.getElementById("custom-model");
 const customApiTypeEl = document.getElementById("custom-api-type");
 const verifyCustomButton = document.getElementById("verify-custom");
 const customVerifyStatusEl = document.getElementById("custom-verify-status");
+const apiKeyHintEl = document.getElementById("api-key-hint");
 const toggleKeyButton = document.getElementById("toggle-key");
 const connectGoogleButton = document.getElementById("connect-google");
 const signOutGoogleButton = document.getElementById("sign-out-google");
@@ -55,6 +56,14 @@ function formatTime(ts) {
 
 function updateProviderUi() {
   customConfigEl.style.display = providerEl.value === "custom" ? "grid" : "none";
+
+  if (apiKeyHintEl) {
+    if (providerEl.value === "custom") {
+      apiKeyHintEl.textContent = "Only require API key for cloud providers. You can leave this empty for local providers.";
+    } else {
+      apiKeyHintEl.textContent = "API key is required for cloud providers.";
+    }
+  }
 }
 
 function getCustomCompletionsUrl(baseUrl) {
@@ -241,7 +250,14 @@ async function saveSettings() {
     notificationsEnabled
   });
 
-  setStatus(aiApiKey ? "Settings saved." : "Settings saved. Add an API key later to enable AI parsing.");
+  const cloudProvider = provider === "gemini" || provider === "claude" || provider === "openai";
+  if (!aiApiKey && cloudProvider) {
+    setStatus("Settings saved. API key is required for cloud providers.");
+  } else if (!aiApiKey && provider === "custom") {
+    setStatus("Settings saved. API key is optional for local/custom providers.");
+  } else {
+    setStatus("Settings saved.");
+  }
 }
 
 async function reconnectGoogle() {
@@ -371,7 +387,10 @@ async function runSyncNowFromSettings() {
 }
 
 async function runInitialSyncFromSettings() {
-  const range = diagInitialRangeEl.value || "last30";
+  let range = diagInitialRangeEl.value || "last30";
+  if (range !== "last15" && range !== "last30") {
+    range = "last30";
+  }
   diagRunInitialButton.disabled = true;
   setDiagStatus(`Starting initial sync (${range})...`);
 
