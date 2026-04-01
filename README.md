@@ -1,151 +1,248 @@
-# Careerlog — Chrome Extension
+# Careerlog
 
-> Automatically tracks job applications from Gmail into your Google Sheet.
-> Your emails never leave your browser. No backend. No subscription.
+Track job applications from Gmail to Google Sheets automatically, with your own AI provider, in your own browser.
+
+No backend. No data warehouse. No monthly SaaS dependency.
 
 ---
 
-## Setup (5 steps)
+## Why This Project Is Worth Buying
 
-### 1. Get a Google OAuth Client ID
+Careerlog solves a painful workflow that every active job seeker has: keeping applications updated across dozens of ATS emails, interview updates, and status changes.
 
-1. Go to [Google Cloud Console](https://console.cloud.google.com/)
-2. Create a new project (or use existing)
-3. Enable these APIs:
+What makes this sellable:
+
+- Clear painkiller product: removes manual spreadsheet admin from the job search process.
+- Trust-first architecture: privacy posture is strong and easy to explain to users.
+- Fast user activation: onboarding gets users from install to first sync in minutes.
+- Low operating overhead: no backend, no infra bill, no on-call burden.
+- Flexible AI economics: supports Gemini, Claude, OpenAI, and local/custom models.
+
+If you are packaging this as a product or acquisition asset, the core value story is simple:
+
+"Users keep full ownership of their data while getting automation usually locked behind subscriptions."
+
+---
+
+## Product Snapshot
+
+- Platform: Chrome Extension (Manifest V3)
+- Core workflow: Gmail events -> filtering -> AI parsing -> Google Sheets updates
+- Data ownership: user-controlled Google account and spreadsheet
+- AI providers: Gemini, Claude, OpenAI, custom OpenAI-compatible, Ollama local models
+- Sync behavior: initial backfill (15 or 30 days) + ongoing catch-up every 5 minutes
+- UI surfaces: popup, setup wizard, settings, full dashboard
+
+---
+
+## Business Hooks You Can Use In Pitch Decks
+
+Use these lines when positioning the project to buyers, partners, or early customers:
+
+- "Own your pipeline, not just your notes."
+- "The privacy-first job tracker: your inbox, your AI key, your sheet."
+- "From application email to organized tracker row in seconds."
+- "No backend risk, no subscription lock-in, no vendor data hostage scenario."
+- "An MVP that already behaves like a product, not a prototype."
+
+---
+
+## How It Works
+
+Initial setup flow:
+
+1. User picks AI provider and enters key (or configures local/custom endpoint).
+2. User signs in with Google via Chrome Identity.
+3. Extension creates a formatted Google Sheet with `Applications` and `Interview Log` tabs.
+4. User chooses sync range (`last15` or `last30`) for first import.
+5. Extension parses candidate emails and writes structured rows.
+
+Ongoing automation:
+
+- Polling alarm runs every 5 minutes.
+- Wake triggers run on Chrome startup and window focus.
+- Gmail history API is used for incremental catch-up.
+- If Gmail history expires, extension falls back to a last-7-days scan.
+
+Matching and updates:
+
+- Row matching prioritizes Job URL, then company/role fuzzy match, then company fallback for update events.
+- Existing rows get status/round updates.
+- New opportunities insert at top of sheet.
+
+---
+
+## Privacy And Security Positioning
+
+This is a major selling point and should be front-and-center:
+
+- Emails are processed inside the extension runtime.
+- There is no app-owned backend receiving mailbox content.
+- OAuth is handled through Chrome Identity APIs.
+- Data is persisted in `chrome.storage.local` and user-owned Google Sheets.
+- Custom API endpoints are constrained to `https://` or localhost HTTP for safer local runtimes.
+- AI JSON responses are schema-restricted before writing to Sheets.
+
+---
+
+## Features
+
+- Multi-provider AI parsing with provider-specific verification logic.
+- Local model support via Ollama (`/api/chat` with `/api/generate` fallback).
+- Account-to-sheet binding for multi-account Google usage.
+- Real-time status and diagnostics in settings.
+- Manual `Sync now` controls in popup and dashboard.
+- Interview pipeline visualization and activity feed in dashboard.
+- Structured onboarding with progress UI and completion state.
+
+---
+
+## Tech Stack
+
+- Chrome Extension: Manifest V3 service worker architecture
+- Auth: Chrome Identity API
+- Email source: Gmail API (`gmail.readonly`)
+- Storage target: Google Sheets API (`spreadsheets`)
+- UI: Vanilla HTML/CSS/JS
+- Persistence: `chrome.storage.local`
+
+---
+
+## Quick Start
+
+### 1. Configure Google Cloud OAuth
+
+1. Create or select a project in Google Cloud Console.
+2. Enable APIs:
    - Gmail API
    - Google Sheets API
-   - Google Drive API
-4. Go to **Credentials → Create Credentials → OAuth 2.0 Client ID**
-5. Application type: **Chrome Extension**
-6. Add your extension ID (get it from `chrome://extensions` after loading unpacked)
-7. Copy the Client ID
+3. Create OAuth 2.0 Client ID with application type `Chrome Extension`.
+4. Add your extension ID from `chrome://extensions`.
+5. Put the client ID into `manifest.json` under `oauth2.client_id`.
 
-### 2. Add Client ID to manifest.json
+Important: do not leave placeholder client IDs. Chrome auth will fail with `bad client id` style errors.
 
-```json
-"oauth2": {
-  "client_id": "YOUR_CLIENT_ID.apps.googleusercontent.com",
-  ...
-}
-```
-
-### 3. Generate placeholder icons
+### 2. (Optional) Generate Icons
 
 ```bash
 pip install pillow
 python scripts/generate_icons.py
 ```
 
-### 4. Load the extension in Chrome
+### 3. Load Extension
 
 1. Open `chrome://extensions`
-2. Enable **Developer mode** (top right)
-3. Click **Load unpacked**
-4. Select this folder
+2. Turn on `Developer mode`
+3. Click `Load unpacked`
+4. Select this repository folder
 
-### 5. Run setup
+### 4. Complete Onboarding
 
-1. Click the Careerlog icon in your toolbar
-2. Click **Get started**
-3. Choose your AI provider and paste your API key
-4. Sign in with Google
-5. Pick your date range and click **Start syncing**
+1. Open extension popup and click `Get started`
+2. Select AI provider
+3. Add API key (optional for local/custom)
+4. Connect Google
+5. Choose initial sync range and start sync
 
 ---
 
-## Getting API Keys
+## AI Provider Setup
 
-| Provider | Free tier | Get key |
+| Provider | Typical Cost Profile | Key URL |
 |---|---|---|
-| **Gemini** | Yes — 1500/day free | [aistudio.google.com](https://aistudio.google.com/app/apikey) |
-| **Claude** | No | [console.anthropic.com](https://console.anthropic.com/keys) |
-| **OpenAI** | No | [platform.openai.com](https://platform.openai.com/api-keys) |
-| **Local Llama (Ollama)** | Yes (local) | No cloud key required |
+| Gemini | Free tier available | https://aistudio.google.com/app/apikey |
+| Claude | Paid usage | https://console.anthropic.com/keys |
+| OpenAI | Paid usage | https://platform.openai.com/api-keys |
+| Ollama (local) | Local compute | No cloud key required |
 
-### Local model setup (Llama via Ollama)
+Local/custom example:
 
-1. Install and run Ollama locally.
-2. Pull a model, for example:
-  - `ollama pull llama3.1`
-3. In extension **Settings**:
-  - Provider: **Custom / Local Model**
-  - Custom API Type: **Ollama (/api/chat)**
-  - Custom API Base URL: `http://localhost:11434`
-  - Custom Model: `llama3.1`
-  - API key: optional (leave blank for Ollama)
-4. Click **Verify Custom API**, then **Save settings**.
+- Provider: `Custom / Local Model`
+- API Type: `Ollama`
+- Base URL: `http://localhost:11434`
+- Model: `llama3.1`
+- API key: optional for local Ollama
 
 ---
 
-## File Structure
+## Project Structure
 
-```
-careerlog/
-├── manifest.json          ← Extension config — ADD YOUR CLIENT ID HERE
-├── background.js          ← Service worker (sync logic)
-├── lib/
-│   ├── auth.js            ← OAuth token management
-│   ├── gmail.js           ← Gmail API + email parsing
-│   ├── filter.js          ← 4-layer job email filter
-│   ├── ai.js              ← Claude / Gemini / OpenAI
-│   └── sheets.js          ← Google Sheets read/write
-├── popup/
-│   ├── popup.html         ← Toolbar popup (320px)
-│   └── popup.js
-├── onboarding/
-│   ├── onboarding.html    ← 4-step setup flow
-│   └── onboarding.js
-├── dashboard/
-│   └── dashboard.html     ← Full dashboard (opens as tab)
-├── styles/
-│   └── tokens.css         ← Design tokens + fonts
-├── icons/                 ← Generate with scripts/generate_icons.py
-└── scripts/
-    └── generate_icons.py  ← Icon generator (pip install pillow)
-```
-
----
-
-## How it works
-
-```
-Every 5 minutes (or on Chrome wake-up):
-  Gmail historyId → fetch new emails → 4-layer filter → AI parse → update Sheet
-
-First run:
-  User picks date range → Gmail query with after:date → batch fetch → AI parse → Sheet
+```text
+Job-Tracker/
+|- manifest.json
+|- background.js
+|- lib/
+|  |- auth.js
+|  |- gmail.js
+|  |- filter.js
+|  |- ai.js
+|  |- sheets.js
+|- popup/
+|  |- popup.html
+|  |- popup.js
+|- onboarding/
+|  |- onboarding.html
+|  |- onboarding.js
+|- dashboard/
+|  |- dashboard.html
+|  |- dashboard.js
+|- settings/
+|  |- settings.html
+|  |- settings.js
+|- styles/
+|  |- tokens.css
+|  |- popup.css
+|  |- onboarding.css
+|  |- dashboard.css
+|- scripts/
+|  |- generate_icons.py
 ```
 
 ---
 
-## Privacy
+## Operational Notes For Buyers
 
-- Your emails are never sent to any server we control
-- API calls go directly: your browser → AI provider (using your key)
-- Data lives only in your own Google Sheet
-- OAuth tokens managed by Chrome — we never see them
-- Open source — read the code yourself
+- `totalProcessed` is an event counter from sync processing, not a direct sheet row count.
+- Applied date logic prefers parsed date, then source email date, and avoids fabricating dates for update-type emails.
+- Gmail history expiration is handled with a fallback scan, reducing silent data gaps.
+- Duplicate reduction is improved by matching by job URL before fuzzy company/role checks.
+
+These are the kinds of details buyers look for because they reduce support burden post-handoff.
 
 ---
 
 ## Troubleshooting
 
-**Extension not syncing?**
-- Check `chrome://extensions` → Careerlog → **Service Worker** → Inspect → Console
-- Verify your API key is valid (Settings page)
-- Try clicking **Sync now** in the popup
+Sync issues:
 
-**No emails being detected?**
-- Open Gmail and search: `subject:(application received) OR from:(greenhouse.io)`
-- If that returns results but the extension doesn't catch them, your emails may use different subject lines
-- Open Settings and check the filter sensitivity
+- Inspect service worker logs in `chrome://extensions` -> Careerlog -> `Service Worker`.
+- Confirm provider config and API key in Settings.
+- Run `Sync now` from popup or dashboard.
 
-**Sheet not updating?**
-- Make sure you completed all 4 onboarding steps
-- Check that your Google Sheet still exists (it may have been deleted)
-- Try re-connecting Google in Settings
+OAuth issues:
 
-**historyId expired error?**
-- This happens if Chrome was closed for more than 30 days
-- The extension will automatically fall back to scanning the last 7 days
-- Open the dashboard and click **Sync now** to trigger a fresh scan
+- Verify `manifest.json` has a valid Chrome Extension OAuth client ID.
+- Reconnect Google from Settings.
+
+Sheet write issues:
+
+- Confirm sheet exists and account still has access.
+- Use Settings diagnostics to inspect last error and rerun sync.
+
+No detections:
+
+- Validate your emails match query patterns (ATS domains, application/interview/rejection keywords).
+- Trigger manual sync after recent inbox activity.
+
+---
+
+## Positioning Summary
+
+Careerlog is a practical, production-leaning automation asset with a strong trust narrative:
+
+- Users keep control of inbox data.
+- Setup and ongoing usage are simple.
+- Architecture is low-cost to maintain.
+- Market demand is persistent and obvious.
+
+That combination makes it attractive for founders, indie makers, career-tech operators, and agencies that want a monetizable product without backend complexity.
