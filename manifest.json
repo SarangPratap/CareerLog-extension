@@ -8,8 +8,7 @@
     "identity",
     "storage",
     "alarms",
-    "tabs",
-    "permissions"
+    "tabs"
   ],
 
   "host_permissions": [

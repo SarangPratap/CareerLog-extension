@@ -3,6 +3,8 @@ var STAGE_COLORS = ['#9BCAF2', '#C2DCF2', '#F2D6B3', '#D4A070', '#8BD6B4', '#F2C
 var STAGE_NAMES = ['Applied', 'Reviewing', 'Interview', 'Finals', 'Offer', 'Rejected'];
 var DATE_RANGE_KEY = 'dashboardDateRange';
 var DATE_RANGE_OPTIONS = ['7', '15', 'all'];
+var STATUS_FILTER_KEY = 'dashboardStatusFilter';
+var STATUS_FILTER_OPTIONS = ['all', 'active', 'offer'];
 var DASHBOARD_STATE = {
   allApps: [],
   statusFilter: 'all',
@@ -11,6 +13,10 @@ var DASHBOARD_STATE = {
 
 function isValidDateRange(value) {
   return DATE_RANGE_OPTIONS.indexOf(value) !== -1;
+}
+
+function isValidStatusFilter(value) {
+  return STATUS_FILTER_OPTIONS.indexOf(value) !== -1;
 }
 
 function syncActivePills(selector, attr, value) {
@@ -230,7 +236,7 @@ function getAppsFromSheet(sheetId, token, callback) {
 
 function loadDashboard() {
   chrome.storage.local.get(
-    ['sheetId', 'aiProvider', 'lastSyncTime', 'totalProcessed', 'activityLog', DATE_RANGE_KEY],
+    ['sheetId', 'aiProvider', 'lastSyncTime', 'totalProcessed', 'activityLog', DATE_RANGE_KEY, STATUS_FILTER_KEY],
     function(d) {
       var prov = PROVIDER_LABELS[d.aiProvider] || d.aiProvider || '–';
       document.getElementById('top-provider').textContent = prov;
@@ -241,7 +247,11 @@ function loadDashboard() {
       if (isValidDateRange(d[DATE_RANGE_KEY])) {
         DASHBOARD_STATE.dateRange = d[DATE_RANGE_KEY];
       }
+      if (isValidStatusFilter(d[STATUS_FILTER_KEY])) {
+        DASHBOARD_STATE.statusFilter = d[STATUS_FILTER_KEY];
+      }
       syncActivePills('.range-pill', 'data-range', DASHBOARD_STATE.dateRange);
+      syncActivePills('.status-pill', 'data-filter', DASHBOARD_STATE.statusFilter);
 
       var now = new Date();
       document.getElementById('page-date').textContent = now.toLocaleString('default', { month: 'long' }) + ' ' + now.getFullYear();
@@ -277,6 +287,11 @@ document.querySelectorAll('.status-pill').forEach(function(pill) {
     document.querySelectorAll('.status-pill').forEach(function(p) { p.classList.remove('on'); });
     pill.classList.add('on');
     DASHBOARD_STATE.statusFilter = pill.getAttribute('data-filter') || 'all';
+    chrome.storage.local.set((function() {
+      var payload = {};
+      payload[STATUS_FILTER_KEY] = DASHBOARD_STATE.statusFilter;
+      return payload;
+    })());
     applyDashboardFilters();
   });
 });
