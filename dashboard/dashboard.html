@@ -74,7 +74,9 @@
     .content-grid { display: grid; grid-template-columns: 1fr 280px; gap: 1.75rem; }
 
     /* Job cards */
-    .apps-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
+    .apps-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; gap: 12px; flex-wrap: wrap; }
+    .apps-head-left { display: flex; align-items: center; gap: 10px; }
+    .range-lbl { font-size: 10px; letter-spacing: .07em; text-transform: uppercase; color: var(--on4); }
     .filter-row { display: flex; gap: 5px; }
     .fpill { font-size: 11px; padding: 4px 11px; border-radius: 20px; cursor: pointer;
       font-family: 'Inter', sans-serif; background: transparent; color: var(--on3); border: none; }
@@ -210,11 +212,19 @@
     <div class="content-grid">
       <div>
         <div class="apps-head">
-          <div class="section-lbl" style="margin-bottom:0;">Applications</div>
-          <div class="filter-row">
-            <button class="fpill on" data-filter="all">All</button>
-            <button class="fpill" data-filter="active">Active</button>
-            <button class="fpill" data-filter="offer">Offers</button>
+          <div class="apps-head-left">
+            <div class="section-lbl" style="margin-bottom:0;">Applications</div>
+            <span class="range-lbl">Date range</span>
+            <div class="filter-row" id="date-range-filter">
+              <button class="fpill range-pill on" data-range="7">Past 7 days</button>
+              <button class="fpill range-pill" data-range="15">Past 15 days</button>
+              <button class="fpill range-pill" data-range="all">All time</button>
+            </div>
+          </div>
+          <div class="filter-row" id="status-filter">
+            <button class="fpill status-pill on" data-filter="all">All</button>
+            <button class="fpill status-pill" data-filter="active">Active</button>
+            <button class="fpill status-pill" data-filter="offer">Offers</button>
           </div>
         </div>
         <div class="job-list" id="job-list">

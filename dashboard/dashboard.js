@@ -1,6 +1,23 @@
 var PROVIDER_LABELS = { claude: 'Claude · Haiku', gemini: 'Gemini · free tier', openai: 'GPT-4o Mini', custom: 'Custom provider' };
 var STAGE_COLORS = ['#9BCAF2', '#C2DCF2', '#F2D6B3', '#D4A070', '#8BD6B4', '#F2C2C2'];
 var STAGE_NAMES = ['Applied', 'Reviewing', 'Interview', 'Finals', 'Offer', 'Rejected'];
+var DATE_RANGE_KEY = 'dashboardDateRange';
+var DATE_RANGE_OPTIONS = ['7', '15', 'all'];
+var DASHBOARD_STATE = {
+  allApps: [],
+  statusFilter: 'all',
+  dateRange: '7'
+};
+
+function isValidDateRange(value) {
+  return DATE_RANGE_OPTIONS.indexOf(value) !== -1;
+}
+
+function syncActivePills(selector, attr, value) {
+  document.querySelectorAll(selector).forEach(function(pill) {
+    pill.classList.toggle('on', pill.getAttribute(attr) === value);
+  });
+}
 
 function formatTime(ts) {
   if (!ts) return '–';
@@ -115,6 +132,39 @@ function renderApps(apps, filter) {
   list.innerHTML = html;
 }
 
+function isWithinDays(ts, days) {
+  if (!ts) return false;
+  var cutoff = Date.now() - (days * 24 * 60 * 60 * 1000);
+  return ts >= cutoff;
+}
+
+function filterByDateRange(apps, range) {
+  if (range === 'all') return apps;
+  var days = parseInt(range, 10);
+  if (!days || days < 1) return apps;
+  return apps.filter(function(app) {
+    var ts = toSortableDate(app.lastUpdated) || toSortableDate(app.date);
+    return isWithinDays(ts, days);
+  });
+}
+
+function applyDashboardFilters() {
+  var rangeFiltered = filterByDateRange(DASHBOARD_STATE.allApps, DASHBOARD_STATE.dateRange);
+
+  document.getElementById('stat-total').textContent = rangeFiltered.length;
+  var interviews = rangeFiltered.filter(function(a) {
+    return hasInterviewSignal(a);
+  }).length;
+  var offers = rangeFiltered.filter(function(a) {
+    return a.status && a.status.toLowerCase().indexOf('offer') !== -1;
+  }).length;
+  document.getElementById('stat-interviews').textContent = interviews;
+  document.getElementById('stat-offers').textContent = offers;
+
+  renderFunnel(rangeFiltered);
+  renderApps(rangeFiltered, DASHBOARD_STATE.statusFilter);
+}
+
 function renderActivity(log) {
   var feed = document.getElementById('activity-feed');
   if (!log || !log.length) {
@@ -180,7 +230,7 @@ function getAppsFromSheet(sheetId, token, callback) {
 
 function loadDashboard() {
   chrome.storage.local.get(
-    ['sheetId', 'aiProvider', 'lastSyncTime', 'totalProcessed', 'activityLog'],
+    ['sheetId', 'aiProvider', 'lastSyncTime', 'totalProcessed', 'activityLog', DATE_RANGE_KEY],
     function(d) {
       var prov = PROVIDER_LABELS[d.aiProvider] || d.aiProvider || '–';
       document.getElementById('top-provider').textContent = prov;
@@ -188,12 +238,18 @@ function loadDashboard() {
       document.getElementById('usage-parsed').textContent = d.totalProcessed || 0;
       document.getElementById('usage-sync').textContent = formatTime(d.lastSyncTime);
 
+      if (isValidDateRange(d[DATE_RANGE_KEY])) {
+        DASHBOARD_STATE.dateRange = d[DATE_RANGE_KEY];
+      }
+      syncActivePills('.range-pill', 'data-range', DASHBOARD_STATE.dateRange);
+
       var now = new Date();
       document.getElementById('page-date').textContent = now.toLocaleString('default', { month: 'long' }) + ' ' + now.getFullYear();
 
       renderActivity(d.activityLog || []);
 
       if (!d.sheetId) {
+        DASHBOARD_STATE.allApps = [];
         document.getElementById('stat-total').textContent = '–';
         document.getElementById('stat-interviews').textContent = '–';
         document.getElementById('stat-offers').textContent = '–';
@@ -208,40 +264,34 @@ function loadDashboard() {
             console.error('Sheet fetch error', err);
             return;
           }
-          document.getElementById('stat-total').textContent = apps.length;
-          var interviews = apps.filter(function(a) {
-            return hasInterviewSignal(a);
-          }).length;
-          var offers = apps.filter(function(a) {
-            return a.status && a.status.indexOf('Offer') !== -1;
-          }).length;
-          document.getElementById('stat-interviews').textContent = interviews;
-          document.getElementById('stat-offers').textContent = offers;
-
-          renderFunnel(apps);
-          renderApps(apps, 'all');
+          DASHBOARD_STATE.allApps = apps;
+          applyDashboardFilters();
         });
       });
     }
   );
 }
 
-document.querySelectorAll('.fpill').forEach(function(pill) {
+document.querySelectorAll('.status-pill').forEach(function(pill) {
   pill.addEventListener('click', function() {
-    document.querySelectorAll('.fpill').forEach(function(p) { p.classList.remove('on'); });
+    document.querySelectorAll('.status-pill').forEach(function(p) { p.classList.remove('on'); });
     pill.classList.add('on');
-    chrome.identity.getAuthToken({ interactive: false }, function(token) {
-      chrome.storage.local.get(['sheetId'], function(d) {
-        if (!token || !d.sheetId) return;
-        getAppsFromSheet(d.sheetId, token, function(err, apps) {
-          if (err) {
-            console.error('Filter fetch error', err);
-            return;
-          }
-          renderApps(apps, pill.getAttribute('data-filter'));
-        });
-      });
-    });
+    DASHBOARD_STATE.statusFilter = pill.getAttribute('data-filter') || 'all';
+    applyDashboardFilters();
+  });
+});
+
+document.querySelectorAll('.range-pill').forEach(function(pill) {
+  pill.addEventListener('click', function() {
+    document.querySelectorAll('.range-pill').forEach(function(p) { p.classList.remove('on'); });
+    pill.classList.add('on');
+    DASHBOARD_STATE.dateRange = pill.getAttribute('data-range') || 'all';
+    chrome.storage.local.set((function() {
+      var payload = {};
+      payload[DATE_RANGE_KEY] = DASHBOARD_STATE.dateRange;
+      return payload;
+    })());
+    applyDashboardFilters();
   });
 });
 
